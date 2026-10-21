@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfólio Pessoal | Portfólio Monocromático</title>
+  <meta name="description" content="Portfólio profissional contemporâneo com navegação horizontal contínua, menu em roda e estética monocromática minimalista.">
+  
+  <!-- Tipografia Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       1. Variáveis e Reset de Estilos (Monocromático Estrito)
+       ------------------------------------------------------------- */
+    :root {
+      --bg: #09090b;
+      --bg-subtle: #121215;
+      --fg: #fafafa;
+      --fg-muted: #8e8e93;
+      --border-ghost: rgba(255, 255, 255, 0.1);
+      --highlight-bg: #ffffff;
+      --highlight-fg: #09090b;
+      --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --trans-speed: 0.6s;
+      --trans-cubic: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --bg: #fafafa;
+      --bg-subtle: #f0f0f2;
+      --fg: #09090b;
+      --fg-muted: #6e6e73;
+      --border-ghost: rgba(0, 0, 0, 0.1);
+      --highlight-bg: #09090b;
+      --highlight-fg: #ffffff;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color var(--trans-speed) ease, color var(--trans-speed) ease, border-color var(--trans-speed) ease;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden; /* Scroll vertical estritamente proibido */
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* -------------------------------------------------------------
+       2. Splash / Abertura com Animação da Logo (Máx 2.5s)
+       ------------------------------------------------------------- */
+    #intro-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: opacity 0.6s var(--trans-cubic), visibility 0.6s ease;
+    }
+
+    #intro-splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .splash-logo-svg {
+      width: 120px;
+      height: 120px;
+    }
+
+    .splash-path {
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation: drawLogo 1.8s var(--trans-cubic) forwards;
+    }
+
+    @keyframes drawLogo {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    /* -------------------------------------------------------------
+       3. Cabeçalho Minimalista e Flutuante (Sem bordas / sem cor)
+       ------------------------------------------------------------- */
+    .floating-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 2.2rem 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      background: transparent;
+      border: none;
+      pointer-events: none;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-decoration: none;
+      color: var(--fg);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .brand-logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .brand-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.04em;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      pointer-events: auto;
+    }
+
+    .theme-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.6rem;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      opacity: 0.65;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      cursor: pointer;
+      padding: 0.4rem;
+    }
+
+    /* -------------------------------------------------------------
+       4. Menu Orbital Inspirado na Referência (Polo Central + Arco)
+       ------------------------------------------------------------- */
+    .wheel-nav-container {
+      position: fixed;
+      left: 3.5rem; /* Margem confortável da borda esquerda da tela */
+      top: 50%;
+      transform: translateY(-50%);
+      width: 380px;
+      height: 380px;
+      z-index: 800;
+      pointer-events: none;
+    }
+
+    /* Logotipo / Monograma fixo no centro do polo da roda */
+    .wheel-hub-logo {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      color: var(--fg);
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      pointer-events: auto;
+      text-decoration: none;
+      z-index: 850;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .wheel-disc {
+      position: absolute;
+      top: 50%;
+      left: 24px; /* Centro da rotação parte do ponto central da logo */
+      width: 320px;
+      height: 320px;
+      margin-top: -160px;
+      margin-left: -160px;
+      border-radius: 50%;
+      transition: transform 0.65s cubic-bezier(0.2, 0.9, 0.25, 1);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .wheel-item {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .wheel-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%); /* Centraliza verticalmente o texto em relação ao raio polar */
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      text-transform: capitalize;
+      color: #555558; /* Cinza suave e discreto como no print */
+      padding: 0.2rem 0.55rem; /* Padding reduzido ao mínimo para aproximar os nomes */
+      border-radius: 4px;
+      background: transparent;
+      transition: color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    [data-theme="light"] .wheel-label {
+      color: #8e8e93;
+    }
+
+    .wheel-label:hover {
+      color: var(--fg);
+    }
+
+    /* Item ativo idêntico ao "Work" no print: pill cinza escuro compacto com texto nítido */
+    .wheel-item.is-active .wheel-label {
+      color: #ffffff;
+      background-color: #313134; /* Fundo pill idêntico ao da imagem */
+      opacity: 1;
+      font-weight: 600;
+      padding: 0.28rem 0.75rem;
+    }
+
+    [data-theme="light"] .wheel-item.is-active .wheel-label {
+      color: #ffffff;
+      background-color: #1c1c1e;
+    }
+
+    /* -------------------------------------------------------------
+       5. Palco Principal e Seções com Rolagem Horizontal Única
+       ------------------------------------------------------------- */
+    main.viewport-stage {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-view {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      opacity: 0;
+      visibility: hidden;
+      display: flex;
+      align-items: center;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s ease;
+      padding: 0 6vw 0 24vw; /* Espaçamento calibrado para deixar a roda respirar à esquerda */
+    }
+
+    .section-view.is-visible {
+      opacity: 1;
+      visibility: visible;
+      z-index: 10;
+    }
+
+    /* Trilho de rolagem horizontal contínua */
+    .horizontal-track {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE */
+      padding: 0 12vw 0 4vw; /* Espaçamento mais compacto entre seções */
+      gap: 3.5vw; /* Menor espaçamento entre os blocos */
+      scroll-behavior: smooth;
+    }
+
+    .horizontal-track::-webkit-scrollbar {
+      display: none; /* Chrome, Safari */
+    }
+
+    /* Elementos editoriais que escalam do centro para as bordas */
+    .focus-item {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 380px;
+      max-width: 540px;
+      transform: scale(0.85);
+      opacity: 0.35;
+      transition: transform 0.35s var(--trans-cubic), opacity 0.35s var(--trans-cubic);
+    }
+
+    .focus-item.is-centered {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* -------------------------------------------------------------
+       6. Tipografia e Composição (Zero Cards)
+       ------------------------------------------------------------- */
+    .section-eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .section-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+
+    .editorial-lead {
+      font-size: 1.15rem;
+      color: var(--fg-muted);
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 2rem;
+      align-items: center;
+    }
+
+    .mono-action-btn {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.9rem 1.8rem;
+      background: var(--fg);
+      color: var(--bg);
+      border: 1px solid var(--fg);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mono-action-btn:hover {
+      background: transparent;
+      color: var(--fg);
+    }
+
+    .mono-action-btn.secondary {
+      background: transparent;
+      color: var(--fg);
+      border: 1px solid var(--border-ghost);
+    }
+
+    .mono-action-btn.secondary:hover {
+      border-color: var(--fg);
+    }
+
+    /* -------------------------------------------------------------
+       7. Projetos (Sem Cards, Filtro sem reload, Modal)
+       ------------------------------------------------------------- */
+    .projects-filter-bar {
+      position: absolute;
+      top: 6.5rem;
+      left: 6vw;
+      display: flex;
+      gap: 1.2rem;
+      z-index: 20;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: var(--fg-muted);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding-bottom: 0.2rem;
+      border-bottom: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      color: var(--fg);
+      border-bottom-color: var(--fg);
+    }
+
+    .project-entry {
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-ghost);
+      padding-bottom: 2rem;
+    }
+
+    .project-number {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--fg-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .project-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.8rem;
+    }
+
+    .project-tags {
+      font-size: 0.85rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* Modal de Projeto */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      padding: 2rem;
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-sheet {
+      background: var(--bg);
+      border: 1px solid var(--border-ghost);
+      max-width: 650px;
+      width: 100%;
+      padding: 3.5rem;
+      position: relative;
+      color: var(--fg);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.8rem;
+      right: 1.8rem;
+      background: transparent;
+      border: none;
+      color: var(--fg);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    /* -------------------------------------------------------------
+       8. Habilidades (Texto comportamental & Ícones técnicos)
+       ------------------------------------------------------------- */
+    .skills-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .tech-icons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.4rem;
+      margin-top: 1rem;
+    }
+
+    .tech-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--border-ghost);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .tech-chip svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* -------------------------------------------------------------
+       9. Certificações, Experiências, Contato & Currículo
+       ------------------------------------------------------------- */
+    .cert-item {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    .cert-preview-box {
+      width: 100%;
+      height: 220px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-ghost);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cert-preview-box svg {
+      width: 64px;
+      height: 64px;
+      color: var(--fg-muted);
+    }
+
+    .timeline-year {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.1em;
+    }
+
+    .contact-item-row {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      border-bottom: 1px solid var(--border-ghost);
+      padding: 1.2rem 0;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    .contact-type {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--fg-muted);
+      width: 120px;
+      text-transform: uppercase;
+    }
+
+    .contact-val {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    /* Leitor de PDF do Currículo */
+    .pdf-reader-wrap {
+      width: 100%;
+      height: 60vh;
+      border: 1px solid var(--border-ghost);
+      background: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+
+    /* -------------------------------------------------------------
+       10. Navegação Auxiliar (Setas horizontais na base)
+       ------------------------------------------------------------- */
+    .nav-arrow-hints {
+      position: fixed;
+      bottom: 2.2rem;
+      left: 6vw;
+      display: flex;
+      gap: 1.2rem;
+      z-index: 100;
+      align-items: center;
+    }
+
+    .arrow-btn {
+      background: transparent;
+      border: 1px solid var(--border-ghost);
+      color: var(--fg);
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .arrow-btn:hover {
+      border-color: var(--fg);
+    }
+
+    .nav-hint-txt {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+    }
+
+    /* -------------------------------------------------------------
+       11. Menu Hambúrguer Móvel (Drawer)
+       ------------------------------------------------------------- */
+    .mobile-drawer {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 1500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem;
+      transform: translateX(100%);
+      transition: transform 0.4s var(--trans-cubic);
+    }
+
+    .mobile-drawer.is-active {
+      transform: translateX(0);
+    }
+
+    .mobile-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .mobile-nav-link {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--fg-muted);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .mobile-nav-link.active {
+      color: var(--fg);
+    }
+
+    /* -------------------------------------------------------------
+       12. Responsividade e Adaptações
+       ------------------------------------------------------------- */
+    @media (max-width: 900px) {
+      .floating-header {
+        padding: 1.5rem 1.8rem;
+      }
+
+      .wheel-nav-container {
+        display: none; /* Em telas menores o menu hambúrguer assume */
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .section-view {
+        padding: 0 1rem;
+      }
+
+      .horizontal-track {
+        padding: 0 10vw;
+        gap: 8vw;
+      }
+
+      .focus-item {
+        min-width: 80vw;
+        max-width: 80vw;
+      }
+
+      .projects-filter-bar {
+        left: 1.8rem;
+        top: 5rem;
+      }
+
+      .nav-arrow-hints {
+        left: 1.8rem;
+        bottom: 1.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Tela de Abertura / Logo animada (referência 2 - Máx 2.5s) -->
+  <div id="intro-splash" aria-hidden="true">
+    <svg class="splash-logo-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+      <!-- Monograma geométrico traçado -->
+      <polygon class="splash-path" points="50,15 85,85 15,85" stroke-width="3" stroke-linejoin="round" />
+      <line class="splash-path" x1="30" y1="60" x2="70" y2="60" stroke-width="3" />
+    </svg>
+  </div>
+
+  <!-- 2. Cabeçalho Minimalista e Flutuante (sem delimitação/sem bordas) -->
+  <header class="floating-header">
+    <a href="#inicio" class="brand-logo" id="logo-trigger" aria-label="Ir para o Início">
+      <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6">
+        <polygon points="50,15 85,85 15,85" stroke-linejoin="round" />
+        <line x1="30" y1="60" x2="70" y2="60" />
+      </svg>
+      <span class="brand-name">[Seu Nome]</span>
+    </a>
+
+    <div class="header-controls">
+      <!-- Alternador de Tema Monocromático -->
+      <button class="theme-toggle-btn" id="theme-toggle" aria-label="Alternar tema claro e escuro">Modo Claro</button>
+
+      <!-- Botão Hambúrguer Mobile -->
+      <button class="mobile-menu-toggle" id="menu-toggle-btn" aria-label="Abrir menu de navegação">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 3. Menu em Roda Orbital (Inspirado na referência Core-A: Monograma no centro + Arco de opções) -->
+  <nav class="wheel-nav-container" aria-label="Navegação em roda">
+    <!-- Logotipo / Monograma fixo no polo central da roda -->
+    <a href="#inicio" class="wheel-hub-logo" onclick="navigateToSection('inicio'); return false;" aria-label="Início">
+      CA
+    </a>
+
+    <div class="wheel-disc" id="wheel-disc">
+      <!-- Ordem do leque idêntica à referência visual enviada pelo usuário -->
+      <div class="wheel-item" data-section="inicio" role="button" tabindex="0">
+        <span class="wheel-label">Inicio</span>
+      </div>
+      <div class="wheel-item" data-section="projetos" role="button" tabindex="0">
+        <span class="wheel-label">Work</span>
+      </div>
+      <div class="wheel-item" data-section="sobre" role="button" tabindex="0">
+        <span class="wheel-label">Sobre</span>
+      </div>
+      <div class="wheel-item is-active" data-section="certificacoes" role="button" tabindex="0">
+        <span class="wheel-label">Certificados</span>
+      </div>
+      <div class="wheel-item" data-section="habilidades" role="button" tabindex="0">
+        <span class="wheel-label">Skills</span>
+      </div>
+      <div class="wheel-item" data-section="experiencias" role="button" tabindex="0">
+        <span class="wheel-label">Team & Exp</span>
+      </div>
+      <div class="wheel-item" data-section="contato" role="button" tabindex="0">
+        <span class="wheel-label">Contato</span>
+      </div>
+      <div class="wheel-item" data-section="curriculo" role="button" tabindex="0">
+        <span class="wheel-label">Currículo</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 4. Menu Drawer Mobile -->
+  <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+    <ul class="mobile-nav-list">
+      <li><a href="#inicio" class="mobile-nav-link active" data-target="inicio">Início</a></li>
+      <li><a href="#projetos" class="mobile-nav-link" data-target="projetos">Projetos</a></li>
+      <li><a href="#sobre" class="mobile-nav-link" data-target="sobre">Sobre</a></li>
+      <li><a href="#certificacoes" class="mobile-nav-link" data-target="certificacoes">Certificações</a></li>
+      <li><a href="#habilidades" class="mobile-nav-link" data-target="habilidades">Habilidades</a></li>
+      <li><a href="#experiencias" class="mobile-nav-link" data-target="experiencias">Experiências</a></li>
+      <li><a href="#contato" class="mobile-nav-link" data-target="contato">Contato</a></li>
+      <li><a href="#curriculo" class="mobile-nav-link" data-target="curriculo">Currículo</a></li>
+    </ul>
+  </div>
+
+  <!-- 5. Palco Principal das Seções (Rolagem puramente horizontal) -->
+  <main class="viewport-stage" id="stage">
+
+    <!-- SEÇÃO 1: INÍCIO -->
+    <section class="section-view" id="inicio" aria-label="Seção Início">
+      <div class="horizontal-track">
+        <article class="focus-item is-centered">
+          <p class="section-eyebrow">01 / Introdução</p>
+          <h1 class="section-headline">[Seu Nome]</h1>
+          <p class="editorial-lead">[Área de atuação / Ex: Desenvolvedor Front-end & Engenheiro Criativo]. Construo interfaces minimalistas, com alto desempenho e interação apurada.</p>
+          <div class="action-row">
+            <button class="mono-action-btn" onclick="navigateToSection('projetos')">Ver Projetos</button>
+            <button class="mono-action-btn secondary" onclick="navigateToSection('contato')">Iniciar Conversa</button>
+          </div>
+        </article>
+
+        <article class="focus-item">
+          <p class="section-eyebrow">Objetivo Profissional</p>
+          <h2 class="section-headline">Foco & Direção</h2>
+          <p class="editorial-lead">[O que desejo seguir / Ex: Arquitetura de software moderna, experiências imersivas na web e sistemas de design monocromáticos elegantes].</p>
+        </article>
+
+        <article class="focus-item">
+          <p class="section-eyebrow">Competências em Destaque</p>
+          <h2 class="section-headline">Pilares Técnicos</h2>
+          <p class="editorial-lead">Arquitetura limpa sem bibliotecas pesadas, design tipográfico e microinterações pensadas nos mínimos detalhes.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: PROJETOS (Sem Cards, com Filtro e Modal) -->
+    <section class="section-view" id="projetos" aria-label="Seção Projetos">
+      <div class="projects-filter-bar" role="toolbar" aria-label="Filtro de Projetos">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="web">Web</button>
+        <button class="filter-btn" data-filter="design">Design</button>
+        <button class="filter-btn" data-filter="lab">Laboratório</button>
+      </div>
+
+      <div class="horizontal-track" id="projects-track">
+        <article class="focus-item project-entry" data-category="web" data-title="Plataforma Orbital" data-desc="Um ecossistema digital web sem scroll vertical, baseado em navegação radial e renderização rápida." data-tech="HTML5, CSS Puro, JavaScript ES6+" data-link="https://github.com">
+          <span class="project-number">01 / WEB</span>
+          <h2 class="project-title">Plataforma Orbital</h2>
+          <p class="project-tags">HTML5 &bull; CSS3 &bull; Vanilla JS</p>
+        </article>
+
+        <article class="focus-item project-entry" data-category="design" data-title="Sistema Monocromático" data-desc="Guia de estilo e biblioteca de design com paleta rigorosa de cinzas, foco em legibilidade e acessibilidade." data-tech="Design System, Acessibilidade, Tipografia" data-link="https://github.com">
+          <span class="project-number">02 / DESIGN</span>
+          <h2 class="project-title">Sistema Monocromático</h2>
+          <p class="project-tags">Design System &bull; Tipografia &bull; UI/UX</p>
+        </article>
+
+        <article class="focus-item project-entry" data-category="lab" data-title="Experimento Radial 3D" data-desc="Microinterações em tempo real com matrizes CSS e suporte completo a telas touchscreen." data-tech="Canvas, SVG dinâmico, Microinterações" data-link="https://github.com">
+          <span class="project-number">03 / LAB</span>
+          <h2 class="project-title">Experimento Radial</h2>
+          <p class="project-tags">SVG Dinâmico &bull; Touch &bull; Interação</p>
+        </article>
+
+        <article class="focus-item project-entry" data-category="web" data-title="Portfólio Editorial" data-desc="Experiência de leitura fluida horizontal inspirada em editoriais impressos clássicos." data-tech="Layout Fluido, Performance 100%" data-link="https://github.com">
+          <span class="project-number">04 / WEB</span>
+          <h2 class="project-title">Portfólio Editorial</h2>
+          <p class="project-tags">Front-end Puro &bull; Zero Dependências</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: SOBRE -->
+    <section class="section-view" id="sobre" aria-label="Seção Sobre">
+      <div class="horizontal-track">
+        <article class="focus-item">
+          <p class="section-eyebrow">03 / Biografia</p>
+          <h2 class="section-headline">Apresentação</h2>
+          <p class="editorial-lead">[Apresentação aprofundada: Sou apaixonado por unir código rigoroso e design intencional. Meu foco é entregar produtos leves, rápidos e com personalidade própria.]</p>
+        </article>
+
+        <article class="focus-item">
+          <p class="section-eyebrow">Filosofia de Trabalho</p>
+          <h2 class="section-headline">Clareza & Precisão</h2>
+          <p class="editorial-lead">Acredito na remoção do supérfluo. Menos ruído visual permite que o conteúdo e as decisões de engenharia falem mais alto.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: CERTIFICAÇÕES (Início ativo como no print) -->
+    <section class="section-view is-visible" id="certificacoes" aria-label="Seção Certificações">
+      <div class="horizontal-track">
+        <a class="focus-item cert-item" href="certificacao-1.pdf" target="_blank" rel="noopener noreferrer">
+          <div class="cert-preview-box">
+            <!-- Representação gráfica monocromática da certificação -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <p class="section-eyebrow">Certificado 01</p>
+          <h3 class="project-title">[Certificação Front-end Especialista]</h3>
+          <p class="project-tags">Emitido em 2025 &bull; Clique para abrir PDF</p>
+        </a>
+
+        <a class="focus-item cert-item" href="certificacao-2.pdf" target="_blank" rel="noopener noreferrer">
+          <div class="cert-preview-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <p class="section-eyebrow">Certificado 02</p>
+          <h3 class="project-title">[Arquitetura de Software & Design]</h3>
+          <p class="project-tags">Emitido em 2024 &bull; Clique para abrir PDF</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 5: HABILIDADES (Comportamentais em texto & Técnicas em ícones) -->
+    <section class="section-view" id="habilidades" aria-label="Seção Habilidades">
+      <div class="horizontal-track">
+        <article class="focus-item">
+          <p class="section-eyebrow">Habilidades Comportamentais</p>
+          <h2 class="section-headline">Soft Skills</h2>
+          <p class="editorial-lead">Comunicação clara, raciocínio analítico apurado, postura proativa na resolução de problemas complexos e adaptabilidade a novos ambientes e tecnologias.</p>
+        </article>
+
+        <article class="focus-item skills-block">
+          <div>
+            <p class="section-eyebrow">Habilidades Técnicas</p>
+            <h2 class="section-headline">Tecnologias</h2>
+          </div>
+          <div class="tech-icons-row">
+            <div class="tech-chip">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span>HTML5 Semântico</span>
+            </div>
+            <div class="tech-chip">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+              <span>CSS3 Avançado</span>
+            </div>
+            <div class="tech-chip">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>JavaScript Moderno</span>
+            </div>
+            <div class="tech-chip">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 2 22 22 22"/></svg>
+              <span>Git & GitHub</span>
+            </div>
+            <div class="tech-chip">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+              <span>Design de Interface</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 6: EXPERIÊNCIAS -->
+    <section class="section-view" id="experiencias" aria-label="Seção Experiências">
+      <div class="horizontal-track">
+        <article class="focus-item">
+          <p class="timeline-year">2024 &mdash; PRESENTE</p>
+          <h2 class="section-headline">[Empresa Atual]</h2>
+          <p class="section-eyebrow">[Desenvolvedor / Especialista Web]</p>
+          <p class="editorial-lead">Desenvolvimento de soluções web acessíveis, sistemas de microinteração fluida e manutenção da arquitetura técnica.</p>
+        </article>
+
+        <article class="focus-item">
+          <p class="timeline-year">2022 &mdash; 2024</p>
+          <h2 class="section-headline">[Empresa Anterior]</h2>
+          <p class="section-eyebrow">[Desenvolvedor Júnior / Designer]</p>
+          <p class="editorial-lead">Criação de páginas institucionais responsivas e implementação de layouts limpos focados em conversão e usabilidade.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 7: CONTATO -->
+    <section class="section-view" id="contato" aria-label="Seção Contato">
+      <div class="horizontal-track">
+        <article class="focus-item">
+          <p class="section-eyebrow">07 / Comunicação</p>
+          <h2 class="section-headline">Vamos Conversar?</h2>
+          <p class="editorial-lead">Estou disponível para novos projetos, propostas profissionais e colaborações técnicas.</p>
+          
+          <div style="margin-top: 2rem;">
+            <a href="mailto:[seu-email@dominio.com]" class="contact-item-row">
+              <span class="contact-type">E-mail</span>
+              <span class="contact-val">[seu-email@dominio.com]</span>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-item-row">
+              <span class="contact-type">LinkedIn</span>
+              <span class="contact-val">/[seu-perfil]</span>
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-item-row">
+              <span class="contact-type">GitHub</span>
+              <span class="contact-val">/[seu-usuario]</span>
+            </a>
+            <div class="contact-item-row">
+              <span class="contact-type">Telefone</span>
+              <span class="contact-val">[opcional: (00) 00000-0000]</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 8: CURRÍCULO (Leitor de PDF + Baixar) -->
+    <section class="section-view" id="curriculo" aria-label="Seção Currículo">
+      <div class="horizontal-track">
+        <article class="focus-item" style="min-width: 65vw; max-width: 75vw;">
+          <p class="section-eyebrow">08 / Documento</p>
+          <h2 class="section-headline">Currículo Profissional</h2>
+          <div class="action-row" style="margin-top: 0.5rem;">
+            <button class="mono-action-btn" id="open-reader-btn">Visualizar no Leitor</button>
+            <a href="curriculo.pdf" download="Curriculo_[SeuNome].pdf" class="mono-action-btn secondary">Baixar PDF</a>
+          </div>
+
+          <div class="pdf-reader-wrap" id="pdf-container">
+            <!-- Visualizador simulado / iframe seguro para PDF -->
+            <iframe src="curriculo.pdf#toolbar=0" style="width:100%; height:100%; border:none;" title="Leitor de Currículo">
+              <p style="padding: 1rem; color: var(--fg-muted);">Seu navegador não suporta visualização direta. Utilize o botão Baixar PDF.</p>
+            </iframe>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Indicador e Setas Auxiliares de Rolagem Horizontal -->
+  <div class="nav-arrow-hints">
+    <button class="arrow-btn" id="arrow-prev" aria-label="Item anterior">&larr;</button>
+    <button class="arrow-btn" id="arrow-next" aria-label="Próximo item">&rarr;</button>
+    <span class="nav-hint-txt">Deslize ou use setas</span>
+  </div>
+
+  <!-- Modal de Detalhes do Projeto -->
+  <div class="modal-backdrop" id="project-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-sheet">
+      <button class="modal-close" id="modal-close-btn" aria-label="Fechar modal">&times;</button>
+      <p class="section-eyebrow" id="modal-project-cat">Categoria</p>
+      <h2 class="section-headline" id="modal-project-title" style="font-size: 2.2rem; margin-bottom: 1rem;">Título do Projeto</h2>
+      <p class="editorial-lead" id="modal-project-desc" style="margin-bottom: 1.5rem;">Descrição do projeto.</p>
+      <p style="font-size: 0.85rem; color: var(--fg-muted); margin-bottom: 2rem;" id="modal-project-tech">Tecnologias</p>
+      <a href="#" id="modal-project-link" target="_blank" rel="noopener noreferrer" class="mono-action-btn">Ver Repositório / Demo</a>
+    </div>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       Lógica JavaScript Pura (Navegação, Roda, Tema e Gestos)
+       ------------------------------------------------------------- */
+
+    // 1. Splash Screen Logo Reveal (referência 2 - Máx 2.5s)
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('intro-splash');
+      setTimeout(() => {
+        splash.classList.add('fade-out');
+      }, 1900);
+      
+      initWheelNavigation();
+      initHorizontalProximity();
+      initThemePersistence();
+      initProjectFilterAndModal();
+      initKeyboardAndTouch();
+    });
+
+    // 2. Alternância e Persistência do Tema Claro / Escuro
+    function initThemePersistence() {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const root = document.documentElement;
+      
+      const savedTheme = localStorage.getItem('portfolio_theme') || 'dark';
+      root.setAttribute('data-theme', savedTheme);
+      updateThemeButtonText(savedTheme);
+
+      toggleBtn.addEventListener('click', () => {
+        const currentTheme = root.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('portfolio_theme', nextTheme);
+        updateThemeButtonText(nextTheme);
+      });
+    }
+
+    function updateThemeButtonText(theme) {
+      const toggleBtn = document.getElementById('theme-toggle');
+      toggleBtn.textContent = theme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+    }
+
+    // 3. Menu em Roda Orbital (Distribuição circular e rotação dinâmica)
+    // A ordem das seções corresponde ao leque da captura enviada
+    const sections = ['inicio', 'projetos', 'sobre', 'certificacoes', 'habilidades', 'experiencias', 'contato', 'curriculo'];
+    // Inicia com 'certificacoes' (índice 3) no centro do leque, idêntico à captura enviada
+    let activeSectionIndex = 3; 
+
+    function initWheelNavigation() {
+      const disc = document.getElementById('wheel-disc');
+      const items = disc.querySelectorAll('.wheel-item');
+      const total = items.length;
+      // Passo angular compacto de 24 graus para a curvatura perfeita
+      const angleStep = 24; 
+      const radius = 108; // Raio proporcional correspondente à imagem
+
+      items.forEach((item, idx) => {
+        // Os itens são calculados com offset em relação ao item central (índice 3 = Certificados a 0°)
+        const angle = (idx - 3) * angleStep;
+        const rad = (angle * Math.PI) / 180;
+        const x = Math.cos(rad) * radius;
+        const y = Math.sin(rad) * radius;
+
+        // Cada seção acompanha o arco com rotação tangencial
+        item.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+        
+        item.addEventListener('click', () => {
+          navigateToSection(sections[idx]);
+        });
+
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigateToSection(sections[idx]);
+          }
+        });
+      });
+
+      updateWheelRotation();
+    }
+
+    function updateWheelRotation() {
+      const disc = document.getElementById('wheel-disc');
+      const items = disc.querySelectorAll('.wheel-item');
+      const angleStep = 24;
+
+      // O item ativo gira para o centro horizontal (0° em relação ao monograma "CA")
+      const targetRotation = -((activeSectionIndex - 3) * angleStep);
+      disc.style.transform = `rotate(${targetRotation}deg)`;
+
+      items.forEach((item, idx) => {
+        const diff = Math.abs(idx - activeSectionIndex);
+
+        if (idx === activeSectionIndex) {
+          item.classList.add('is-active');
+          item.style.opacity = '1';
+          item.style.visibility = 'visible';
+        } else {
+          item.classList.remove('is-active');
+          // Visibilidade harmônica com o leque da imagem
+          if (diff <= 3) {
+            item.style.opacity = (0.75 - diff * 0.18).toFixed(2);
+            item.style.visibility = 'visible';
+          } else {
+            item.style.opacity = '0';
+            item.style.visibility = 'hidden';
+          }
+        }
+      });
+    }
+
+    // 4. Troca de Seções
+    function navigateToSection(sectionId) {
+      const targetIndex = sections.indexOf(sectionId);
+      if (targetIndex === -1) return;
+
+      activeSectionIndex = targetIndex;
+
+      // Atualiza visualização das seções com transição suave
+      document.querySelectorAll('.section-view').forEach(view => {
+        view.classList.remove('is-visible');
+      });
+      const activeView = document.getElementById(sectionId);
+      if (activeView) {
+        activeView.classList.add('is-visible');
+        // Reseta rolagem horizontal para o início
+        const track = activeView.querySelector('.horizontal-track');
+        if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
+      }
+
+      // Atualiza rotação do menu em roda
+      updateWheelRotation();
+
+      // Atualiza menu mobile se aberto
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('data-target') === sectionId);
+      });
+      document.getElementById('mobile-drawer').classList.remove('is-active');
+    }
+
+    // 5. Escala por Proximidade na Rolagem Horizontal (Cresce no centro, encolhe nas bordas)
+    function initHorizontalProximity() {
+      const tracks = document.querySelectorAll('.horizontal-track');
+
+      tracks.forEach(track => {
+        const updateCards = () => {
+          const trackRect = track.getBoundingClientRect();
+          const trackCenter = trackRect.left + trackRect.width / 2;
+          const items = track.querySelectorAll('.focus-item');
+
+          items.forEach(item => {
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.left + itemRect.width / 2;
+            const distance = Math.abs(trackCenter - itemCenter);
+            const maxDistance = trackRect.width / 1.8;
+
+            // Fator de escala dinâmico baseado na proximidade do centro
+            let progress = 1 - Math.min(distance / maxDistance, 1);
+            let scale = 0.78 + (progress * 0.22);
+            let opacity = 0.3 + (progress * 0.7);
+
+            item.style.transform = `scale(${scale.toFixed(3)})`;
+            item.style.opacity = opacity.toFixed(3);
+
+            if (distance < itemRect.width * 0.5) {
+              item.classList.add('is-centered');
+            } else {
+              item.classList.remove('is-centered');
+            }
+          });
+        };
+
+        track.addEventListener('scroll', updateCards, { passive: true });
+        window.addEventListener('resize', updateCards, { passive: true });
+        // Executa atualização inicial
+        setTimeout(updateCards, 100);
+      });
+    }
+
+    // 6. Controles por Teclado, Toque e Scroll do Mouse (Scroll vertical converte em horizontal)
+    function initKeyboardAndTouch() {
+      // Setas esquerda e direita do rodapé
+      const prevBtn = document.getElementById('arrow-prev');
+      const nextBtn = document.getElementById('arrow-next');
+
+      const scrollCurrentTrack = (direction) => {
+        const activeSection = document.querySelector('.section-view.is-visible');
+        if (!activeSection) return;
+        const track = activeSection.querySelector('.horizontal-track');
+        if (!track) return;
+
+        const scrollAmount = track.clientWidth * 0.45;
+        track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      };
+
+      prevBtn.addEventListener('click', () => scrollCurrentTrack(-1));
+      nextBtn.addEventListener('click', () => scrollCurrentTrack(1));
+
+      // Scroll do mouse: roda para cima/baixo move a página da esquerda para a direita
+      window.addEventListener('wheel', (e) => {
+        // Se um modal estiver aberto, não interfere
+        const modal = document.getElementById('project-modal');
+        if (modal && modal.classList.contains('is-open')) return;
+
+        const activeSection = document.querySelector('.section-view.is-visible');
+        if (!activeSection) return;
+        const track = activeSection.querySelector('.horizontal-track');
+        if (!track) return;
+
+        // Determina o deslocamento: roda para baixo move para a direita (avança), roda para cima volta para a esquerda
+        const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        track.scrollBy({ left: delta * 2.2, behavior: 'auto' });
+      }, { passive: true });
+
+      // Navegação por teclado global (setas esquerda/direita rolam a seção, cima/baixo trocam de seção na roda)
+      window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.key === 'ArrowRight') {
+          scrollCurrentTrack(1);
+        } else if (e.key === 'ArrowLeft') {
+          scrollCurrentTrack(-1);
+        } else if (e.key === 'ArrowUp') {
+          // Navega para a seção anterior na roda
+          const prevIdx = (activeSectionIndex - 1 + sections.length) % sections.length;
+          navigateToSection(sections[prevIdx]);
+        } else if (e.key === 'ArrowDown') {
+          // Navega para a próxima seção na roda
+          const nextIdx = (activeSectionIndex + 1) % sections.length;
+          navigateToSection(sections[nextIdx]);
+        }
+      });
+
+      // Menu Hambúrguer Móvel
+      const menuBtn = document.getElementById('menu-toggle-btn');
+      const drawer = document.getElementById('mobile-drawer');
+
+      menuBtn.addEventListener('click', () => {
+        drawer.classList.toggle('is-active');
+      });
+
+      drawer.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = link.getAttribute('data-target');
+          navigateToSection(target);
+        });
+      });
+    }
+
+    // 7. Filtro de Projetos (Sem reload) e Modal
+    function initProjectFilterAndModal() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const projectItems = document.querySelectorAll('.project-entry');
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const category = btn.getAttribute('data-filter');
+          projectItems.forEach(item => {
+            const itemCat = item.getAttribute('data-category');
+            if (category === 'all' || itemCat === category) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Modal de detalhes
+      const modal = document.getElementById('project-modal');
+      const closeBtn = document.getElementById('modal-close-btn');
+
+      projectItems.forEach(item => {
+        item.addEventListener('click', () => {
+          document.getElementById('modal-project-cat').textContent = item.getAttribute('data-category').toUpperCase();
+          document.getElementById('modal-project-title').textContent = item.getAttribute('data-title');
+          document.getElementById('modal-project-desc').textContent = item.getAttribute('data-desc');
+          document.getElementById('modal-project-tech').textContent = 'Tecnologias: ' + item.getAttribute('data-tech');
+          document.getElementById('modal-project-link').href = item.getAttribute('data-link');
+          modal.classList.add('is-open');
+        });
+      });
+
+      closeBtn.addEventListener('click', () => modal.classList.remove('is-open'));
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('is-open');
+      });
+
+      // Botão do Currículo para focar o leitor
+      const readerBtn = document.getElementById('open-reader-btn');
+      if (readerBtn) {
+        readerBtn.addEventListener('click', () => {
+          const container = document.getElementById('pdf-container');
+          container.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    }
+  </script>
+</body>
+</html>

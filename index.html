@@ -48,15 +48,24 @@
     }
 
     html, body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden; /* Scroll vertical estritamente proibido */
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: scroll; /* Rolagem vertical ativa no documento */
       background-color: var(--bg);
       color: var(--fg);
       font-family: var(--font-body);
       line-height: 1.5;
       user-select: none;
       -webkit-font-smoothing: antialiased;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+    }
+
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Edge */
+      width: 0;
+      height: 0;
     }
 
     /* -------------------------------------------------------------
@@ -270,107 +279,122 @@
     }
 
     /* -------------------------------------------------------------
-       5. Palco Principal e Seções com Rolagem Horizontal Única
+       5. Palco Principal: Rolagem Vertical que move o mundo na Horizontal
        ------------------------------------------------------------- */
-    main.viewport-stage {
+    .scroll-wrapper {
+      position: relative;
+      width: 100%;
+      pointer-events: none;
+      visibility: hidden;
+      /* A altura total é calibrada dinamicamente via JS de acordo com a largura real */
+    }
+
+    .sticky-viewport {
+      position: fixed; /* Fixo na tela: impede qualquer movimento vertical e garante rolagem 100% horizontal */
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      position: relative;
       overflow: hidden;
-      perspective: 1200px;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .horizontal-world {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 100vh;
+      width: max-content;
+      will-change: transform;
+      padding-left: 24vw; /* Espaço para o menu orbital fixo respirar à esquerda */
+      padding-right: 14vw;
+      gap: 6vw;
     }
 
     .section-view {
-      position: absolute;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      opacity: 0;
-      visibility: hidden;
-      display: none; /* Impede qualquer sobreposição de seções inativas */
-      align-items: center;
-      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
-                  transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
-                  visibility 0.65s ease;
-      padding: 0 6vw 0 24vw; /* Espaçamento calibrado para deixar a roda respirar à esquerda */
-      pointer-events: none;
-      transform: translateX(50px);
-      will-change: transform, opacity;
-      z-index: 1;
-    }
-
-    .section-view.is-visible,
-    .section-view.slide-out-left,
-    .section-view.slide-out-right {
+      position: relative;
       display: flex;
-    }
-
-    .section-view.is-visible {
+      align-items: center;
+      height: 100%;
+      flex-shrink: 0;
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
-      z-index: 10;
-      transform: translateX(0);
     }
 
-    .section-view.slide-out-left {
-      opacity: 0;
-      visibility: hidden;
-      transform: translateX(-60px);
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    .section-view.slide-out-right {
-      opacity: 0;
-      visibility: hidden;
-      transform: translateX(60px);
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    /* Trilho de rolagem horizontal contínua */
+    /* Trilho de itens dentro de cada seção */
     .horizontal-track {
-      width: 100%;
-      height: 100%;
       display: flex;
       align-items: center;
-      overflow-x: auto;
-      overflow-y: visible; /* permite que o parallax fique visível sem clipar */
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding: 0 calc(50vw - 240px); /* centraliza perfeitamente o primeiro e o último item sem deslocamento */
-      gap: 4vw;
-      scroll-behavior: auto;
+      gap: 3.5vw;
+      height: 100%;
     }
 
-    .horizontal-track::-webkit-scrollbar {
-      display: none; /* Chrome, Safari */
-    }
-
-    /* Elementos editoriais com animação de passagem controlada por JS via rAF-lerp */
+    /* Elementos editoriais sem animações bugadas de blur ou distorções */
     .focus-item {
       flex: 0 0 auto;
-      scroll-snap-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
       min-width: 380px;
       max-width: 540px;
-      /* SEM transition CSS aqui: o JS gerencia tudo via rAF para evitar conflito de interpolação */
-      will-change: transform, opacity, filter;
+      opacity: 1;
+      transform: none;
+      filter: none;
+      cursor: default;
+    }
+
+    /* -------------------------------------------------------------
+       Indicador de Rolagem Vertical (Apenas uma bolinha branca indicando)
+       ------------------------------------------------------------- */
+    .vertical-scroll-indicator {
+      position: fixed;
+      right: 2.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 220px;
+      width: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
       cursor: pointer;
     }
 
-    /* Estado de entrada ao trocar de seção: animação CSS discreta, só ativa quando .entering */
-    .focus-item.entering {
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                  opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                  filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    .indicator-rail {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 1px;
+      transition: background var(--trans-speed) ease;
     }
 
-    .focus-item.is-centered {
-      /* Apenas marca sem transform fixo: o JS calcula a cada frame */
+    [data-theme="light"] .indicator-rail {
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .indicator-dot {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      margin-left: -4px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.85), 0 0 2px rgba(255, 255, 255, 1);
+      transform: translateY(0);
+      pointer-events: none;
+      will-change: transform;
+      transition: background var(--trans-speed) ease, box-shadow var(--trans-speed) ease;
+    }
+
+    [data-theme="light"] .indicator-dot {
+      background: #09090b;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
     }
 
     /* -------------------------------------------------------------
@@ -446,8 +470,8 @@
        ------------------------------------------------------------- */
     .projects-filter-bar {
       position: absolute;
-      top: 6.5rem;
-      left: 6vw;
+      top: 4.8rem;
+      left: 0;
       display: flex;
       gap: 1.2rem;
       z-index: 20;
@@ -743,28 +767,38 @@
         display: block;
       }
 
+      .horizontal-world {
+        padding-left: 5vw;
+        padding-right: 8vw;
+        gap: 8vw;
+      }
+
       .section-view {
-        padding: 0 1rem;
+        padding: 0;
       }
 
       .horizontal-track {
-        padding: 0 10vw;
-        gap: 8vw;
+        gap: 6vw;
       }
 
       .focus-item {
         min-width: 80vw;
-        max-width: 80vw;
+        max-width: 82vw;
       }
 
       .projects-filter-bar {
-        left: 1.8rem;
-        top: 5rem;
+        left: 0;
+        top: 4.5rem;
       }
 
       .nav-arrow-hints {
         left: 1.8rem;
         bottom: 1.5rem;
+      }
+
+      .vertical-scroll-indicator {
+        right: 0.8rem;
+        height: 160px;
       }
     }
 
@@ -868,11 +902,15 @@
     </ul>
   </div>
 
-  <!-- 5. Palco Principal das Seções (Rolagem puramente horizontal) -->
-  <main class="viewport-stage" id="stage">
+  <!-- 5. Espaçador para rolagem vertical nativa -->
+  <div class="scroll-wrapper" id="scroll-wrapper" aria-hidden="true"></div>
 
-    <!-- SEÇÃO 1: INÍCIO -->
-    <section class="section-view is-visible" id="inicio" aria-label="Seção Início">
+  <!-- Palco Fixo: Imóvel no eixo vertical, o mundo translada puramente na horizontal -->
+  <div class="sticky-viewport" id="sticky-viewport">
+    <main class="horizontal-world" id="horizontal-world">
+
+        <!-- SEÇÃO 1: INÍCIO -->
+        <section class="section-view" id="inicio" aria-label="Seção Início">
       <div class="horizontal-track">
         <article class="focus-item is-centered">
           <p class="section-eyebrow">01 / Introdução</p>
@@ -1093,9 +1131,17 @@
       </div>
     </section>
 
-  </main>
+      </main>
+    </div>
+  </div>
 
-  <!-- Indicador e Setas Auxiliares de Rolagem Horizontal -->
+  <!-- Indicador de Rolagem Vertical (Apenas uma bolinha branca indicando) -->
+  <div class="vertical-scroll-indicator" id="vertical-scroll-indicator" aria-label="Indicador de rolagem">
+    <div class="indicator-rail"></div>
+    <div class="indicator-dot" id="indicator-dot"></div>
+  </div>
+
+  <!-- Setas Auxiliares de Navegação -->
   <div class="nav-arrow-hints">
     <button class="arrow-btn" id="arrow-prev" aria-label="Item anterior">&larr;</button>
     <button class="arrow-btn" id="arrow-next" aria-label="Próximo item">&rarr;</button>
@@ -1115,60 +1161,65 @@
 
   <script>
     /* -------------------------------------------------------------
-       Lógica JavaScript Pura (Navegação, Roda, Tema e Gestos)
+       Lógica JavaScript Pura (Rolagem Vertical -> Horizontal & Controles)
        ------------------------------------------------------------- */
 
     // 1. Splash Screen Logo Reveal (referência 2 - Máx 2.5s)
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('intro-splash');
       setTimeout(() => {
-        splash.classList.add('fade-out');
-      }, 1900);
-      
+        if (splash) splash.classList.add('fade-out');
+      }, 1800);
+
+      initHorizontalScrollSystem();
       initWheelNavigation();
-      initHorizontalProximity();
       initThemePersistence();
       initProjectFilterAndModal();
       initKeyboardAndTouch();
+      initScrollIndicator();
 
-      // Inicializa na seção início com estado ativo
-      navigateToSection('inicio');
+      // Calibra métricas de rolagem
+      updateScrollMetrics();
+      setTimeout(updateScrollMetrics, 300);
     });
 
     // 2. Alternância e Persistência do Tema Claro / Escuro
     function initThemePersistence() {
       const toggleBtn = document.getElementById('theme-toggle');
       const root = document.documentElement;
-      
+
       const savedTheme = localStorage.getItem('portfolio_theme') || 'dark';
       root.setAttribute('data-theme', savedTheme);
       updateThemeButtonText(savedTheme);
 
-      toggleBtn.addEventListener('click', () => {
-        const currentTheme = root.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', nextTheme);
-        localStorage.setItem('portfolio_theme', nextTheme);
-        updateThemeButtonText(nextTheme);
-      });
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const currentTheme = root.getAttribute('data-theme');
+          const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', nextTheme);
+          localStorage.setItem('portfolio_theme', nextTheme);
+          updateThemeButtonText(nextTheme);
+        });
+      }
     }
 
     function updateThemeButtonText(theme) {
       const toggleBtn = document.getElementById('theme-toggle');
-      toggleBtn.textContent = theme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+      if (toggleBtn) {
+        toggleBtn.textContent = theme === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+      }
     }
 
     // 3. Menu em Roda Orbital (Distribuição circular e rotação dinâmica)
-    // A ordem das seções corresponde ao leque de itens do wheel-disc
-    const sections = ['projetos', 'experiencias', 'sobre', 'inicio', 'habilidades', 'contato', 'certificacoes', 'curriculo'];
-    // Inicia com 'inicio' (índice 3) no centro do leque
-    let activeSectionIndex = 3; 
+    const wheelSections = ['projetos', 'experiencias', 'sobre', 'inicio', 'habilidades', 'contato', 'certificacoes', 'curriculo'];
+    let activeSectionId = 'inicio';
 
     function initWheelNavigation() {
       const disc = document.getElementById('wheel-disc');
+      if (!disc) return;
       const items = disc.querySelectorAll('.wheel-item');
-      const angleStep = 24; 
-      const radius = 108; // Raio proporcional correspondente à imagem
+      const angleStep = 24;
+      const radius = 108;
 
       items.forEach((item, idx) => {
         const angle = (idx - 3) * angleStep;
@@ -1177,35 +1228,40 @@
         const y = Math.sin(rad) * radius;
 
         item.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-        
+
+        const sectionTarget = item.getAttribute('data-section') || wheelSections[idx];
+
         item.addEventListener('click', () => {
-          navigateToSection(sections[idx]);
+          navigateToSection(sectionTarget);
         });
 
         item.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            navigateToSection(sections[idx]);
+            navigateToSection(sectionTarget);
           }
         });
       });
 
-      updateWheelRotation();
+      updateWheelRotationForSection(activeSectionId);
     }
 
-    function updateWheelRotation() {
+    function updateWheelRotationForSection(sectionId) {
+      const wheelIndex = wheelSections.indexOf(sectionId);
+      if (wheelIndex === -1) return;
+
       const disc = document.getElementById('wheel-disc');
+      if (!disc) return;
       const items = disc.querySelectorAll('.wheel-item');
       const angleStep = 24;
 
-      // O item ativo gira para o centro horizontal (0° em relação ao monograma "CA")
-      const targetRotation = -((activeSectionIndex - 3) * angleStep);
+      const targetRotation = -((wheelIndex - 3) * angleStep);
       disc.style.transform = `rotate(${targetRotation}deg)`;
 
       items.forEach((item, idx) => {
-        const diff = Math.abs(idx - activeSectionIndex);
+        const diff = Math.abs(idx - wheelIndex);
 
-        if (idx === activeSectionIndex) {
+        if (idx === wheelIndex) {
           item.classList.add('is-active');
           item.style.opacity = '1';
           item.style.visibility = 'visible';
@@ -1220,358 +1276,188 @@
           }
         }
       });
-    }
 
-    // 4. Troca de Seções com Movimento de Passagem Cinemático
-    let currentScrollRaf = null;
-    let wheelCooldown = 0;
-
-    window.cancelScrollAnimation = () => {
-      if (currentScrollRaf) {
-        cancelAnimationFrame(currentScrollRaf);
-        currentScrollRaf = null;
-      }
-    };
-
-    function navigateToSection(sectionId) {
-      const targetIndex = sections.indexOf(sectionId);
-      if (targetIndex === -1) return;
-
-      const targetView = document.getElementById(sectionId);
-      if (!targetView) return;
-
-      window.cancelScrollAnimation();
-
-      const isSameSection = targetIndex === activeSectionIndex && targetView.classList.contains('is-visible');
-      const isForward = targetIndex >= activeSectionIndex;
-      activeSectionIndex = targetIndex;
-
-      // Desativa e desliza para fora todas as outras seções sem deixar resquícios sobrepostos
-      document.querySelectorAll('.section-view').forEach(view => {
-        if (view !== targetView) {
-          if (view.classList.contains('is-visible')) {
-            view.classList.remove('is-visible');
-            view.classList.add(isForward ? 'slide-out-left' : 'slide-out-right');
-            setTimeout(() => {
-              view.classList.remove('slide-out-left', 'slide-out-right');
-            }, 600);
-          } else {
-            view.classList.remove('slide-out-left', 'slide-out-right');
-          }
-        }
-      });
-
-      // Ativa a seção alvo com animação fluida de passagem
-      if (!isSameSection || !targetView.classList.contains('is-visible')) {
-        targetView.classList.remove('slide-out-left', 'slide-out-right');
-        targetView.style.transform = isForward ? 'translateX(65px)' : 'translateX(-65px)';
-        targetView.style.opacity = '0';
-
-        // Força reflow
-        void targetView.offsetWidth;
-
-        targetView.classList.add('is-visible');
-        targetView.style.transform = '';
-        targetView.style.opacity = '';
-
-        // Efeito escalonado sutil na entrada dos itens
-        const items = targetView.querySelectorAll('.focus-item');
-        items.forEach((item, i) => {
-          item.style.transitionDelay = `${i * 0.04}s`;
-        });
-        setTimeout(() => {
-          items.forEach(item => { item.style.transitionDelay = ''; });
-        }, 500);
-
-        // Posiciona a rolagem no primeiro item sem deslocamento indesejado
-        const track = targetView.querySelector('.horizontal-track');
-        if (track) {
-          track.scrollLeft = 0;
-          items.forEach((item, i) => {
-            if (i === 0) {
-              item.style.transform = 'scale(1) translateZ(0)';
-              item.style.opacity = '1';
-              item.style.filter = 'none';
-              item.classList.add('is-centered');
-            } else {
-              item.style.transform = 'scale(0.78) translateZ(0)';
-              item.style.opacity = '0.26';
-              item.style.filter = 'blur(4px)';
-              item.classList.remove('is-centered');
-            }
-          });
-          if (window.wakeTrackProximity) {
-            window.wakeTrackProximity(track);
-          }
-        }
-      }
-
-      // Atualiza rotação do menu em roda
-      updateWheelRotation();
-
-      // Atualiza menu mobile se aberto
       document.querySelectorAll('.mobile-nav-link').forEach(link => {
         link.classList.toggle('active', link.getAttribute('data-target') === sectionId);
       });
+    }
+
+    // 4. Sistema de Rolagem: O Scroll Vertical movimenta o mundo Horizontalmente
+    function initHorizontalScrollSystem() {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', updateScrollMetrics, { passive: true });
+      window.addEventListener('load', updateScrollMetrics);
+
+      const logoTrigger = document.getElementById('logo-trigger');
+      if (logoTrigger) {
+        logoTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          navigateToSection('inicio');
+        });
+      }
+    }
+
+    function updateScrollMetrics() {
+      const world = document.getElementById('horizontal-world');
+      const wrapper = document.getElementById('scroll-wrapper');
+      if (!world || !wrapper) return;
+
+      const maxScrollX = world.scrollWidth - window.innerWidth;
+      const totalVerticalDistance = Math.max(0, maxScrollX);
+      wrapper.style.height = `${totalVerticalDistance + window.innerHeight}px`;
+
+      handleScroll();
+    }
+
+    function handleScroll() {
+      const world = document.getElementById('horizontal-world');
+      const indicator = document.getElementById('vertical-scroll-indicator');
+      const dot = document.getElementById('indicator-dot');
+      if (!world) return;
+
+      const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+      const maxScrollX = world.scrollWidth - window.innerWidth;
+
+      const progress = maxScrollY > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScrollY)) : 0;
+      const currentX = progress * Math.max(0, maxScrollX);
+
+      world.style.transform = `translate3d(-${currentX}px, 0, 0)`;
+
+      // Atualiza a posição da bolinha branca no indicador vertical
+      if (indicator && dot) {
+        const railHeight = indicator.clientHeight - 8;
+        const dotY = progress * railHeight;
+        dot.style.transform = `translateY(${dotY}px)`;
+      }
+
+      // Detecção precisa da seção ativa
+      const allSections = document.querySelectorAll('.section-view');
+      const focalPoint = window.innerWidth > 900 ? window.innerWidth * 0.35 : window.innerWidth * 0.5;
+      let closestSectionId = activeSectionId;
+      let minDiff = Infinity;
+
+      allSections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.left <= focalPoint && rect.right >= focalPoint) {
+          closestSectionId = sec.id;
+          minDiff = -1;
+        } else if (minDiff !== -1) {
+          const dist = Math.min(Math.abs(rect.left - focalPoint), Math.abs(rect.right - focalPoint));
+          if (dist < minDiff) {
+            minDiff = dist;
+            closestSectionId = sec.id;
+          }
+        }
+      });
+
+      if (closestSectionId !== activeSectionId) {
+        activeSectionId = closestSectionId;
+        updateWheelRotationForSection(activeSectionId);
+      }
+    }
+
+    function navigateToSection(sectionId) {
+      const target = document.getElementById(sectionId);
+      const world = document.getElementById('horizontal-world');
+      if (!target || !world) return;
+
+      const offsetAdjustment = window.innerWidth > 900 ? window.innerWidth * 0.24 : window.innerWidth * 0.05;
+      const targetX = Math.max(0, target.offsetLeft - offsetAdjustment);
+
+      const maxScrollX = world.scrollWidth - window.innerWidth;
+      const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (maxScrollX <= 0 || maxScrollY <= 0) return;
+
+      const targetY = (targetX / maxScrollX) * maxScrollY;
+      window.scrollTo({
+        top: targetY,
+        behavior: 'smooth'
+      });
+
       const drawer = document.getElementById('mobile-drawer');
       if (drawer) drawer.classList.remove('is-active');
     }
 
-    // 5. Animação de Passagem Item-a-Item: lerp rAF com posições naturais (sem deslocamento automático)
-    function initHorizontalProximity() {
-      const tracks = document.querySelectorAll('.horizontal-track');
+    // 5. Indicador de Rolagem Vertical (Bolinha branca interativa)
+    function initScrollIndicator() {
+      const indicator = document.getElementById('vertical-scroll-indicator');
+      if (!indicator) return;
 
-      tracks.forEach(track => {
-        const state = new WeakMap();
-        let rafId = null;
-        let prevScrollLeft = -1;
-        let velocity = 0;
+      let isDragging = false;
 
-        const lerp = (a, b, t) => a + (b - a) * t;
-
-        const getItemState = item => {
-          if (!state.has(item)) {
-            const isFirst = item.parentElement && item.parentElement.firstElementChild === item;
-            state.set(item, {
-              scale: isFirst ? 1.0 : 0.78,
-              opacity: isFirst ? 1.0 : 0.26,
-              blur: isFirst ? 0 : 4.0
-            });
-          }
-          return state.get(item);
-        };
-
-        const animate = () => {
-          const trackWidth = track.clientWidth;
-          if (trackWidth === 0) {
-            rafId = null;
-            return;
-          }
-
-          const scrollCenter = track.scrollLeft + trackWidth / 2;
-          const items = track.querySelectorAll('.focus-item');
-
-          const cur = track.scrollLeft;
-          if (prevScrollLeft < 0) prevScrollLeft = cur;
-          const rawVel = cur - prevScrollLeft;
-          velocity = lerp(velocity, rawVel, 0.35);
-          prevScrollLeft = cur;
-
-          let anyActive = false;
-
-          items.forEach(item => {
-            const s = getItemState(item);
-            const naturalCenter = item.offsetLeft + item.offsetWidth / 2;
-            const rawDist = scrollCenter - naturalCenter;
-            const absDist = Math.abs(rawDist);
-            const maxDist = trackWidth * 0.58;
-
-            const progress = Math.max(0, 1 - absDist / maxDist);
-            const eased = Math.pow(progress, 1.5);
-
-            const targetScale   = 0.78 + eased * 0.22;
-            const targetOpacity = 0.26 + eased * 0.74;
-            const targetBlur    = (1 - eased) * 4.0;
-
-            const baseSpeed = 0.14;
-            s.scale   = lerp(s.scale,   targetScale,   baseSpeed + eased * 0.08);
-            s.opacity = lerp(s.opacity, targetOpacity, baseSpeed + eased * 0.08);
-            s.blur    = lerp(s.blur,    targetBlur,    baseSpeed + eased * 0.10);
-
-            item.style.transform = `scale(${s.scale.toFixed(4)}) translateZ(0)`;
-            item.style.opacity   = s.opacity.toFixed(4);
-            item.style.filter    = s.blur < 0.1 ? 'none' : `blur(${s.blur.toFixed(2)}px)`;
-
-            const isCentered = absDist < item.offsetWidth * 0.44;
-            item.classList.toggle('is-centered', isCentered);
-
-            if (
-              Math.abs(s.scale   - targetScale)   > 0.0006 ||
-              Math.abs(s.opacity - targetOpacity) > 0.002  ||
-              Math.abs(s.blur    - targetBlur)    > 0.05
-            ) anyActive = true;
-          });
-
-          if (anyActive || Math.abs(velocity) > 0.08) {
-            rafId = requestAnimationFrame(animate);
-          } else {
-            rafId = null;
-            velocity = 0;
-          }
-        };
-
-        const wake = () => {
-          prevScrollLeft = track.scrollLeft;
-          velocity = 0;
-          if (!rafId) rafId = requestAnimationFrame(animate);
-        };
-
-        window.wakeTrackProximity = (t) => {
-          if (t === track) {
-            prevScrollLeft = track.scrollLeft;
-            velocity = 0;
-            if (!rafId) rafId = requestAnimationFrame(animate);
-          }
-        };
-
-        track.addEventListener('scroll', wake, { passive: true });
-        window.addEventListener('resize', wake, { passive: true });
-
-        // Clique direto em qualquer item traz suavemente para o centro
-        track.querySelectorAll('.focus-item').forEach(item => {
-          item.addEventListener('click', (e) => {
-            if (e.target.closest('button, a, input, textarea')) return;
-            const targetScroll = item.offsetLeft + item.offsetWidth / 2 - track.clientWidth / 2;
-            smoothScrollTrack(track, targetScroll, 400);
-          });
+      const scrollToIndicatorPos = (clientY) => {
+        const rect = indicator.getBoundingClientRect();
+        const pos = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+        const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({
+          top: pos * maxScrollY,
+          behavior: isDragging ? 'auto' : 'smooth'
         });
+      };
 
-        prevScrollLeft = -1;
-        rafId = requestAnimationFrame(animate);
+      indicator.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        scrollToIndicatorPos(e.clientY);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          scrollToIndicatorPos(e.clientY);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+
+      indicator.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        if (e.touches[0]) scrollToIndicatorPos(e.touches[0].clientY);
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches[0]) {
+          scrollToIndicatorPos(e.touches[0].clientY);
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        isDragging = false;
       });
     }
 
-    // Scroll suave unificado e cancelável
-    function smoothScrollTrack(el, target, duration = 380) {
-      window.cancelScrollAnimation();
-      const start = el.scrollLeft;
-      const diff = target - start;
-      if (Math.abs(diff) < 2) return;
-      const startTime = performance.now();
-      const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-
-      const step = (now) => {
-        const t = Math.min((now - startTime) / duration, 1);
-        el.scrollLeft = start + diff * ease(t);
-        if (t < 1) {
-          currentScrollRaf = requestAnimationFrame(step);
-        } else {
-          currentScrollRaf = null;
-        }
-      };
-      currentScrollRaf = requestAnimationFrame(step);
-    }
-
-    // 6. Controles por Teclado, Toque e Scroll do Mouse com Troca Rápida de Seção e Item
+    // 6. Controles Auxiliares: Teclado, Toque e Setas
     function initKeyboardAndTouch() {
       const prevBtn = document.getElementById('arrow-prev');
       const nextBtn = document.getElementById('arrow-next');
 
-      const scrollCurrentTrack = (direction) => {
-        const activeSection = document.querySelector('.section-view.is-visible');
-        if (!activeSection) return;
-        const track = activeSection.querySelector('.horizontal-track');
-        if (!track) return;
+      const scrollStep = () => Math.min(window.innerWidth * 0.45, 520);
 
-        const items = Array.from(track.querySelectorAll('.focus-item')).filter(
-          item => item.offsetParent !== null && window.getComputedStyle(item).display !== 'none'
-        );
-
-        // Se a seção tem apenas 1 item ou nenhum, 1 clique muda direto de seção
-        if (items.length <= 1) {
-          const nextSec = (activeSectionIndex + direction + sections.length) % sections.length;
-          navigateToSection(sections[nextSec]);
-          return;
-        }
-
-        const scrollCenter = track.scrollLeft + track.clientWidth / 2;
-        let currentIndex = 0;
-        let minDistance = Infinity;
-
-        items.forEach((item, idx) => {
-          const naturalCenter = item.offsetLeft + item.offsetWidth / 2;
-          const dist = Math.abs(scrollCenter - naturalCenter);
-          if (dist < minDistance) {
-            minDistance = dist;
-            currentIndex = idx;
-          }
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          window.scrollBy({ top: -scrollStep(), behavior: 'smooth' });
         });
+      }
 
-        if (direction > 0) {
-          if (currentIndex < items.length - 1) {
-            const targetItem = items[currentIndex + 1];
-            const targetScroll = targetItem.offsetLeft + targetItem.offsetWidth / 2 - track.clientWidth / 2;
-            smoothScrollTrack(track, targetScroll, 380);
-          } else {
-            // No último item, 1 clique avança para a próxima seção
-            const nextSec = (activeSectionIndex + 1) % sections.length;
-            navigateToSection(sections[nextSec]);
-          }
-        } else {
-          if (currentIndex > 0) {
-            const targetItem = items[currentIndex - 1];
-            const targetScroll = targetItem.offsetLeft + targetItem.offsetWidth / 2 - track.clientWidth / 2;
-            smoothScrollTrack(track, targetScroll, 380);
-          } else {
-            // No primeiro item, 1 clique volta para a seção anterior
-            const prevSec = (activeSectionIndex - 1 + sections.length) % sections.length;
-            navigateToSection(sections[prevSec]);
-          }
-        }
-      };
-
-      if (prevBtn) prevBtn.addEventListener('click', () => scrollCurrentTrack(-1));
-      if (nextBtn) nextBtn.addEventListener('click', () => scrollCurrentTrack(1));
-
-      // Scroll do mouse: desliza itens e muda de seção ao atingir a borda com apenas uma rolagem
-      window.addEventListener('wheel', (e) => {
-        const modal = document.getElementById('project-modal');
-        if (modal && modal.classList.contains('is-open')) return;
-
-        const activeSection = document.querySelector('.section-view.is-visible');
-        if (!activeSection) return;
-        const track = activeSection.querySelector('.horizontal-track');
-        if (!track) return;
-
-        const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-        if (Math.abs(delta) < 4) return;
-
-        const now = performance.now();
-        const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
-
-        if (delta > 0) {
-          // Rolagem para frente
-          if (maxScroll <= 15 || track.scrollLeft >= maxScroll - 15) {
-            if (now - wheelCooldown > 420) {
-              wheelCooldown = now;
-              const nextSec = (activeSectionIndex + 1) % sections.length;
-              navigateToSection(sections[nextSec]);
-            }
-          } else {
-            track.scrollLeft += delta * 1.5;
-          }
-        } else {
-          // Rolagem para trás
-          if (maxScroll <= 15 || track.scrollLeft <= 15) {
-            if (now - wheelCooldown > 420) {
-              wheelCooldown = now;
-              const prevSec = (activeSectionIndex - 1 + sections.length) % sections.length;
-              navigateToSection(sections[prevSec]);
-            }
-          } else {
-            track.scrollLeft += delta * 1.5;
-          }
-        }
-      }, { passive: true });
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          window.scrollBy({ top: scrollStep(), behavior: 'smooth' });
+        });
+      }
 
       // Navegação por teclado global
       window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-        if (e.key === 'ArrowRight') {
-          scrollCurrentTrack(1);
-        } else if (e.key === 'ArrowLeft') {
-          scrollCurrentTrack(-1);
-        } else if (e.key === 'ArrowUp') {
-          const prevIdx = (activeSectionIndex - 1 + sections.length) % sections.length;
-          navigateToSection(sections[prevIdx]);
-        } else if (e.key === 'ArrowDown') {
-          const nextIdx = (activeSectionIndex + 1) % sections.length;
-          navigateToSection(sections[nextIdx]);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          window.scrollBy({ top: scrollStep(), behavior: 'smooth' });
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          window.scrollBy({ top: -scrollStep(), behavior: 'smooth' });
         }
       });
 
-      // Suporte a swipe no celular
+      // Suporte a gestos touch (swipe horizontal também movimenta verticalmente)
       let touchStartX = 0;
       let touchStartY = 0;
       window.addEventListener('touchstart', (e) => {
@@ -1579,11 +1465,13 @@
         touchStartY = e.touches[0].clientY;
       }, { passive: true });
 
-      window.addEventListener('touchend', (e) => {
-        const diffX = touchStartX - e.changedTouches[0].clientX;
-        const diffY = touchStartY - e.changedTouches[0].clientY;
-        if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
-          scrollCurrentTrack(diffX > 0 ? 1 : -1);
+      window.addEventListener('touchmove', (e) => {
+        const diffX = touchStartX - e.touches[0].clientX;
+        const diffY = touchStartY - e.touches[0].clientY;
+
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 12) {
+          window.scrollBy({ top: diffX * 0.8, behavior: 'auto' });
+          touchStartX = e.touches[0].clientX;
         }
       }, { passive: true });
 
@@ -1627,10 +1515,13 @@
               item.style.display = 'none';
             }
           });
+
+          // Recalcula métricas da página
+          setTimeout(updateScrollMetrics, 40);
         });
       });
 
-      // Modal de detalhes
+      // Modal de detalhes do projeto
       const modal = document.getElementById('project-modal');
       const closeBtn = document.getElementById('modal-close-btn');
 
@@ -1645,17 +1536,18 @@
         });
       });
 
-      closeBtn.addEventListener('click', () => modal.classList.remove('is-open'));
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.remove('is-open');
-      });
+      if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => modal.classList.remove('is-open'));
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('is-open');
+        });
+      }
 
       // Botão do Currículo para focar o leitor
       const readerBtn = document.getElementById('open-reader-btn');
       if (readerBtn) {
         readerBtn.addEventListener('click', () => {
-          const container = document.getElementById('pdf-container');
-          container.scrollIntoView({ behavior: 'smooth' });
+          navigateToSection('curriculo');
         });
       }
     }

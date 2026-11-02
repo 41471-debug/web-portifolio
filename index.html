@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfólio Pessoal | Portfólio Monocromático</title>
-  <meta name="description" content="Portfólio profissional contemporâneo com navegação horizontal contínua, menu em roda e estética monocromática minimalista.">
+  <title>Pedro Gabriel Santos | Portfólio</title>
+  <meta name="description" content="Portfólio de Pedro Gabriel Santos, estudante técnico em TI com foco em desenvolvimento web front-end e back-end.">
   
   <!-- Tipografia Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,7 +69,79 @@
     }
 
     /* -------------------------------------------------------------
-       2. Splash / Abertura com Animação da Logo (Máx 2.5s)
+       Linha Divisória de Seções com Pontas em Losango Regular (#fff)
+       ------------------------------------------------------------- */
+    .section-divider {
+      position: relative;
+      height: 55vh;
+      width: 2px;
+      background-color: #ffffff;
+      flex-shrink: 0;
+      align-self: center;
+      margin: 0 4vw;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #ffffff;
+      left: 50%;
+    }
+
+    .section-divider::before {
+      top: 0;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .section-divider::after {
+      top: 100%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    [data-theme="light"] .section-divider {
+      background-color: #09090b;
+    }
+
+    [data-theme="light"] .section-divider::before,
+    [data-theme="light"] .section-divider::after {
+      background-color: #09090b;
+    }
+
+    /* -------------------------------------------------------------
+       Fundo Escuro com Transição Suave (Sem Blur) Atrás do Menu Roda
+       ------------------------------------------------------------- */
+    .wheel-nav-bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 540px;
+      height: 100vh;
+      z-index: 750; /* Abaixo do menu (800) e acima das seções (10) */
+      pointer-events: none;
+      background: linear-gradient(to right, 
+        #09090b 0%, 
+        #09090b 300px, 
+        rgba(9, 9, 11, 0.75) 400px, 
+        rgba(9, 9, 11, 0.3) 480px, 
+        rgba(9, 9, 11, 0) 100%
+      );
+    }
+
+    [data-theme="light"] .wheel-nav-bg-overlay {
+      background: linear-gradient(to right, 
+        #fafafa 0%, 
+        #fafafa 300px, 
+        rgba(250, 250, 250, 0.75) 400px, 
+        rgba(250, 250, 250, 0.3) 480px, 
+        rgba(250, 250, 250, 0) 100%
+      );
+    }
+
+    /* -------------------------------------------------------------
+       2. Splash / Abertura: Logo Maior com Luz Branca Sutil
        ------------------------------------------------------------- */
     #intro-splash {
       position: fixed;
@@ -77,7 +149,6 @@
       z-index: 9999;
       background-color: var(--bg);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       pointer-events: none;
@@ -89,20 +160,54 @@
       visibility: hidden;
     }
 
-    .splash-logo-svg {
-      width: 120px;
-      height: 120px;
+    .splash-logo-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulseSmooth 2.6s ease-in-out infinite;
     }
 
-    .splash-path {
-      stroke-dasharray: 400;
-      stroke-dashoffset: 400;
-      animation: drawLogo 1.8s var(--trans-cubic) forwards;
+    /* Luz sutil e suave */
+    .splash-glow {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0) 70%);
+      pointer-events: none;
+      animation: glowSmooth 2.6s ease-in-out infinite;
+      z-index: 1;
     }
 
-    @keyframes drawLogo {
-      to {
-        stroke-dashoffset: 0;
+    .splash-logo-img {
+      position: relative;
+      width: 220px;
+      height: auto;
+      object-fit: contain;
+      z-index: 2;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15));
+    }
+
+    /* Animação contínua e suave da logo */
+    @keyframes pulseSmooth {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    /* Animação com variação de opacidade muito mais leve */
+    @keyframes glowSmooth {
+      0%, 100% {
+        transform: scale(0.9);
+        opacity: 0.15;
+      }
+      50% {
+        transform: scale(1.25);
+        opacity: 0.4;
       }
     }
 
@@ -185,7 +290,7 @@
        ------------------------------------------------------------- */
     .wheel-nav-container {
       position: fixed;
-      left: 3.5rem; /* Margem confortável da borda esquerda da tela */
+      left: 3.5rem;
       top: 50%;
       transform: translateY(-50%);
       width: 380px;
@@ -194,7 +299,6 @@
       pointer-events: none;
     }
 
-    /* Logotipo / Monograma fixo no centro do polo da roda */
     .wheel-hub-logo {
       position: absolute;
       top: 50%;
@@ -218,7 +322,7 @@
     .wheel-disc {
       position: absolute;
       top: 50%;
-      left: 24px; /* Centro da rotação parte do ponto central da logo */
+      left: 24px;
       width: 320px;
       height: 320px;
       margin-top: -160px;
@@ -242,14 +346,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transform: translateY(-50%); /* Centraliza verticalmente o texto em relação ao raio polar */
+      transform: translateY(-50%);
       font-family: var(--font-display);
       font-size: 0.82rem;
       font-weight: 500;
       letter-spacing: -0.01em;
       text-transform: capitalize;
-      color: #555558; /* Cinza suave e discreto como no print */
-      padding: 0.2rem 0.55rem; /* Padding reduzido ao mínimo para aproximar os nomes */
+      color: #555558;
+      padding: 0.2rem 0.55rem;
       border-radius: 4px;
       background: transparent;
       transition: color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
@@ -264,10 +368,9 @@
       color: var(--fg);
     }
 
-    /* Item ativo idêntico ao "Work" no print: pill cinza escuro compacto com texto nítido */
     .wheel-item.is-active .wheel-label {
       color: #ffffff;
-      background-color: #313134; /* Fundo pill idêntico ao da imagem */
+      background-color: #313134;
       opacity: 1;
       font-weight: 600;
       padding: 0.28rem 0.75rem;
@@ -286,11 +389,10 @@
       width: 100%;
       pointer-events: none;
       visibility: hidden;
-      /* A altura total é calibrada dinamicamente via JS de acordo com a largura real */
     }
 
     .sticky-viewport {
-      position: fixed; /* Fixo na tela: impede qualquer movimento vertical e garante rolagem 100% horizontal */
+      position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
@@ -307,9 +409,9 @@
       height: 100vh;
       width: max-content;
       will-change: transform;
-      padding-left: 24vw; /* Espaço para o menu orbital fixo respirar à esquerda */
+      padding-left: 24vw;
       padding-right: 14vw;
-      gap: 6vw;
+      gap: 2vw;
     }
 
     .section-view {
@@ -323,7 +425,6 @@
       pointer-events: auto;
     }
 
-    /* Trilho de itens dentro de cada seção */
     .horizontal-track {
       display: flex;
       align-items: center;
@@ -331,7 +432,6 @@
       height: 100%;
     }
 
-    /* Elementos editoriais sem animações bugadas de blur ou distorções */
     .focus-item {
       flex: 0 0 auto;
       display: flex;
@@ -345,8 +445,34 @@
       cursor: default;
     }
 
+    .certificate-card {
+      min-width: 440px;
+      max-width: 560px;
+      align-items: center;
+      gap: 1.1rem;
+    }
+
+    .certificate-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 62vh;
+      object-fit: contain;
+      border: 1px solid var(--border-ghost);
+    }
+
+    .certificate-title {
+      margin: 0;
+      width: 100%;
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 1.8vw, 1.65rem);
+      font-weight: 600;
+      text-align: center;
+      color: var(--fg);
+    }
+
     /* -------------------------------------------------------------
-       Indicador de Rolagem Vertical (Apenas uma bolinha branca indicando)
+       Indicador de Rolagem Vertical
        ------------------------------------------------------------- */
     .vertical-scroll-indicator {
       position: fixed;
@@ -367,13 +493,33 @@
       top: 0;
       bottom: 0;
       width: 1px;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.25);
       border-radius: 1px;
       transition: background var(--trans-speed) ease;
     }
 
+    .indicator-rail::before,
+    .indicator-rail::after {
+      content: '';
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background-color: #ffffff;
+      left: 50%;
+    }
+
+    .indicator-rail::before {
+      top: 0;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .indicator-rail::after {
+      top: 100%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
     [data-theme="light"] .indicator-rail {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.25);
     }
 
     .indicator-dot {
@@ -398,7 +544,7 @@
     }
 
     /* -------------------------------------------------------------
-       6. Tipografia e Composição (Zero Cards)
+       6. Tipografia e Composição
        ------------------------------------------------------------- */
     .section-eyebrow {
       font-family: var(--font-display);
@@ -466,7 +612,7 @@
     }
 
     /* -------------------------------------------------------------
-       7. Projetos (Sem Cards, Filtro sem reload, Modal)
+       7. Projetos
        ------------------------------------------------------------- */
     .projects-filter-bar {
       position: absolute;
@@ -567,7 +713,7 @@
     }
 
     /* -------------------------------------------------------------
-       8. Habilidades (Texto comportamental & Ícones técnicos)
+       8. Habilidades
        ------------------------------------------------------------- */
     .skills-block {
       display: flex;
@@ -661,7 +807,6 @@
       font-weight: 500;
     }
 
-    /* Leitor de PDF do Currículo */
     .pdf-reader-wrap {
       width: 100%;
       height: 60vh;
@@ -674,7 +819,7 @@
     }
 
     /* -------------------------------------------------------------
-       10. Navegação Auxiliar (Setas horizontais na base)
+       10. Navegação Auxiliar
        ------------------------------------------------------------- */
     .nav-arrow-hints {
       position: fixed;
@@ -712,7 +857,7 @@
     }
 
     /* -------------------------------------------------------------
-       11. Menu Hambúrguer Móvel (Drawer)
+       11. Menu Hambúrguer Móvel
        ------------------------------------------------------------- */
     .mobile-drawer {
       position: fixed;
@@ -752,15 +897,19 @@
     }
 
     /* -------------------------------------------------------------
-       12. Responsividade e Adaptações
+       12. Responsividade
        ------------------------------------------------------------- */
     @media (max-width: 900px) {
       .floating-header {
         padding: 1.5rem 1.8rem;
       }
 
+      .wheel-nav-bg-overlay {
+        display: none;
+      }
+
       .wheel-nav-container {
-        display: none; /* Em telas menores o menu hambúrguer assume */
+        display: none;
       }
 
       .mobile-menu-toggle {
@@ -770,7 +919,12 @@
       .horizontal-world {
         padding-left: 5vw;
         padding-right: 8vw;
-        gap: 8vw;
+        gap: 6vw;
+      }
+
+      .section-divider {
+        margin: 0 2vw;
+        height: 40vh;
       }
 
       .section-view {
@@ -818,29 +972,24 @@
 </head>
 <body>
 
-  <!-- 1. Tela de Abertura / Logo animada (referência 2 - Máx 2.5s) -->
+  <!-- 1. Tela de Abertura / Logo Centralizada com Luz Sutil -->
   <div id="intro-splash" aria-hidden="true">
-    <svg class="splash-logo-svg" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-      <!-- Monograma geométrico traçado -->
-      <polygon class="splash-path" points="50,15 85,85 15,85" stroke-width="3" stroke-linejoin="round" />
-      <line class="splash-path" x1="30" y1="60" x2="70" y2="60" stroke-width="3" />
-    </svg>
+    <div class="splash-logo-wrapper">
+      <div class="splash-glow"></div>
+      <img src="./img/logo.png" alt="Logo Pedro Gabriel" class="splash-logo-img">
+    </div>
   </div>
 
-  <!-- 2. Cabeçalho Minimalista e Flutuante (sem delimitação/sem bordas) -->
+  <!-- 2. Cabeçalho Minimalista e Flutuante -->
   <header class="floating-header">
     <a href="#inicio" class="brand-logo" id="logo-trigger" aria-label="Ir para o Início">
       <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6">
-        <polygon points="50,15 85,85 15,85" stroke-linejoin="round" />
-        <line x1="30" y1="60" x2="70" y2="60" />
+        <img src="./img/logo.png" alt="Logo" style="width: 80px;">
       </svg>
-      <span class="brand-name">[Seu Nome]</span>
+      <span class="brand-name">Pedro Gabriel</span>
     </a>
 
     <div class="header-controls">
-      <!-- Alternador de Tema Monocromático -->
-      <button class="theme-toggle-btn" id="theme-toggle" aria-label="Alternar tema claro e escuro">Modo Claro</button>
-
       <!-- Botão Hambúrguer Mobile -->
       <button class="mobile-menu-toggle" id="menu-toggle-btn" aria-label="Abrir menu de navegação">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -852,15 +1001,16 @@
     </div>
   </header>
 
-  <!-- 3. Menu em Roda Orbital (Inspirado na referência Core-A: Monograma no centro + Arco de opções) -->
+  <!-- Fundo 100% escuro atrás da roda com transição leve para a direita -->
+  <div class="wheel-nav-bg-overlay" aria-hidden="true"></div>
+
+  <!-- 3. Menu em Roda Orbital -->
   <nav class="wheel-nav-container" aria-label="Navegação em roda">
-    <!-- Logotipo / Monograma fixo no polo central da roda -->
     <a href="#inicio" class="wheel-hub-logo" onclick="navigateToSection('inicio'); return false;" aria-label="Início">
-      CA
+      <img src="./img/logo.png" alt="Logo" style="width: 100px;">
     </a>
 
     <div class="wheel-disc" id="wheel-disc">
-      <!-- Ordem do leque idêntica à referência visual enviada pelo usuário -->
       <div class="wheel-item" data-section="projetos" role="button" tabindex="0">
         <span class="wheel-label">Work</span>
       </div>
@@ -909,233 +1059,217 @@
   <div class="sticky-viewport" id="sticky-viewport">
     <main class="horizontal-world" id="horizontal-world">
 
-        <!-- SEÇÃO 1: INÍCIO -->
-        <section class="section-view" id="inicio" aria-label="Seção Início">
-      <div class="horizontal-track">
-        <article class="focus-item is-centered">
-          <p class="section-eyebrow">01 / Introdução</p>
-          <h1 class="section-headline">[Seu Nome]</h1>
-          <p class="editorial-lead">[Área de atuação / Ex: Desenvolvedor Front-end & Engenheiro Criativo]. Construo interfaces minimalistas, com alto desempenho e interação apurada.</p>
-          <div class="action-row">
-            <button class="mono-action-btn" onclick="navigateToSection('projetos')">Ver Projetos</button>
-            <button class="mono-action-btn secondary" onclick="navigateToSection('contato')">Iniciar Conversa</button>
-          </div>
-        </article>
-
-        <article class="focus-item">
-          <p class="section-eyebrow">Objetivo Profissional</p>
-          <h2 class="section-headline">Foco & Direção</h2>
-          <p class="editorial-lead">[O que desejo seguir / Ex: Arquitetura de software moderna, experiências imersivas na web e sistemas de design monocromáticos elegantes].</p>
-        </article>
-
-        <article class="focus-item">
-          <p class="section-eyebrow">Competências em Destaque</p>
-          <h2 class="section-headline">Pilares Técnicos</h2>
-          <p class="editorial-lead">Arquitetura limpa sem bibliotecas pesadas, design tipográfico e microinterações pensadas nos mínimos detalhes.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- SEÇÃO 2: PROJETOS (Sem Cards, com Filtro e Modal) -->
-    <section class="section-view" id="projetos" aria-label="Seção Projetos">
-      <div class="projects-filter-bar" role="toolbar" aria-label="Filtro de Projetos">
-        <button class="filter-btn active" data-filter="all">Todos</button>
-        <button class="filter-btn" data-filter="web">Web</button>
-        <button class="filter-btn" data-filter="design">Design</button>
-        <button class="filter-btn" data-filter="lab">Laboratório</button>
-      </div>
-
-      <div class="horizontal-track" id="projects-track">
-        <article class="focus-item project-entry" data-category="web" data-title="Plataforma Orbital" data-desc="Um ecossistema digital web sem scroll vertical, baseado em navegação radial e renderização rápida." data-tech="HTML5, CSS Puro, JavaScript ES6+" data-link="https://github.com">
-          <span class="project-number">01 / WEB</span>
-          <h2 class="project-title">Plataforma Orbital</h2>
-          <p class="project-tags">HTML5 &bull; CSS3 &bull; Vanilla JS</p>
-        </article>
-
-        <article class="focus-item project-entry" data-category="design" data-title="Sistema Monocromático" data-desc="Guia de estilo e biblioteca de design com paleta rigorosa de cinzas, foco em legibilidade e acessibilidade." data-tech="Design System, Acessibilidade, Tipografia" data-link="https://github.com">
-          <span class="project-number">02 / DESIGN</span>
-          <h2 class="project-title">Sistema Monocromático</h2>
-          <p class="project-tags">Design System &bull; Tipografia &bull; UI/UX</p>
-        </article>
-
-        <article class="focus-item project-entry" data-category="lab" data-title="Experimento Radial 3D" data-desc="Microinterações em tempo real com matrizes CSS e suporte completo a telas touchscreen." data-tech="Canvas, SVG dinâmico, Microinterações" data-link="https://github.com">
-          <span class="project-number">03 / LAB</span>
-          <h2 class="project-title">Experimento Radial</h2>
-          <p class="project-tags">SVG Dinâmico &bull; Touch &bull; Interação</p>
-        </article>
-
-        <article class="focus-item project-entry" data-category="web" data-title="Portfólio Editorial" data-desc="Experiência de leitura fluida horizontal inspirada em editoriais impressos clássicos." data-tech="Layout Fluido, Performance 100%" data-link="https://github.com">
-          <span class="project-number">04 / WEB</span>
-          <h2 class="project-title">Portfólio Editorial</h2>
-          <p class="project-tags">Front-end Puro &bull; Zero Dependências</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- SEÇÃO 3: SOBRE -->
-    <section class="section-view" id="sobre" aria-label="Seção Sobre">
-      <div class="horizontal-track">
-        <article class="focus-item">
-          <p class="section-eyebrow">03 / Biografia</p>
-          <h2 class="section-headline">Apresentação</h2>
-          <p class="editorial-lead">[Apresentação aprofundada: Sou apaixonado por unir código rigoroso e design intencional. Meu foco é entregar produtos leves, rápidos e com personalidade própria.]</p>
-        </article>
-
-        <article class="focus-item">
-          <p class="section-eyebrow">Filosofia de Trabalho</p>
-          <h2 class="section-headline">Clareza & Precisão</h2>
-          <p class="editorial-lead">Acredito na remoção do supérfluo. Menos ruído visual permite que o conteúdo e as decisões de engenharia falem mais alto.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- SEÇÃO 4: CERTIFICAÇÕES -->
-    <section class="section-view" id="certificacoes" aria-label="Seção Certificações">
-      <div class="horizontal-track">
-        <a class="focus-item cert-item" href="certificacao-1.pdf" target="_blank" rel="noopener noreferrer">
-          <div class="cert-preview-box">
-            <!-- Representação gráfica monocromática da certificação -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-          </div>
-          <p class="section-eyebrow">Certificado 01</p>
-          <h3 class="project-title">[Certificação Front-end Especialista]</h3>
-          <p class="project-tags">Emitido em 2025 &bull; Clique para abrir PDF</p>
-        </a>
-
-        <a class="focus-item cert-item" href="certificacao-2.pdf" target="_blank" rel="noopener noreferrer">
-          <div class="cert-preview-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-          </div>
-          <p class="section-eyebrow">Certificado 02</p>
-          <h3 class="project-title">[Arquitetura de Software & Design]</h3>
-          <p class="project-tags">Emitido em 2024 &bull; Clique para abrir PDF</p>
-        </a>
-      </div>
-    </section>
-
-    <!-- SEÇÃO 5: HABILIDADES (Comportamentais em texto & Técnicas em ícones) -->
-    <section class="section-view" id="habilidades" aria-label="Seção Habilidades">
-      <div class="horizontal-track">
-        <article class="focus-item">
-          <p class="section-eyebrow">Habilidades Comportamentais</p>
-          <h2 class="section-headline">Soft Skills</h2>
-          <p class="editorial-lead">Comunicação clara, raciocínio analítico apurado, postura proativa na resolução de problemas complexos e adaptabilidade a novos ambientes e tecnologias.</p>
-        </article>
-
-        <article class="focus-item skills-block">
-          <div>
-            <p class="section-eyebrow">Habilidades Técnicas</p>
-            <h2 class="section-headline">Tecnologias</h2>
-          </div>
-          <div class="tech-icons-row">
-            <div class="tech-chip">
-              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              <span>HTML5 Semântico</span>
+      <!-- SEÇÃO 1: INÍCIO -->
+      <section class="section-view" id="inicio" aria-label="Seção Início">
+        <div class="horizontal-track">
+          <article class="focus-item is-centered">
+            <p class="section-eyebrow">01 / Introdução</p>
+            <h1 class="section-headline">Pedro Gabriel Santos</h1>
+            <p class="editorial-lead">Estudante Técnico em Tecnologia da Informação, com foco em desenvolvimento web front-end e back-end. Busco uma oportunidade de estágio para aplicar meus conhecimentos e continuar evoluindo.</p>
+            <div class="action-row">
+              <button class="mono-action-btn" onclick="navigateToSection('projetos')">Ver Projetos</button>
+              <button class="mono-action-btn secondary" onclick="navigateToSection('contato')">Iniciar Conversa</button>
             </div>
-            <div class="tech-chip">
-              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
-              <span>CSS3 Avançado</span>
+          </article>
+
+          <article class="focus-item">
+            <p class="section-eyebrow">Objetivo Profissional</p>
+            <h2 class="section-headline">Foco & Direção</h2>
+            <p class="editorial-lead">Busco estágio em desenvolvimento web para contribuir com projetos, aplicar lógica de programação e ampliar minhas habilidades técnicas.</p>
+          </article>
+
+          <article class="focus-item">
+            <p class="section-eyebrow">Competências em Destaque</p>
+            <h2 class="section-headline">Pilares Técnicos</h2>
+            <p class="editorial-lead">HTML, CSS, JavaScript, React, Tailwind, Node.js e MySQL, com atenção à organização, proatividade e resolução de problemas.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 1 e Seção 2 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 2: PROJETOS -->
+      <section class="section-view" id="projetos" aria-label="Seção Projetos">
+        <div class="horizontal-track" id="projects-track">
+          <article class="focus-item">
+            <span class="project-number">PORTFÓLIO</span>
+            <h2 class="project-title">Projetos em desenvolvimento</h2>
+            <p class="editorial-lead">Esta seção será atualizada com projetos pessoais e repositórios assim que estiverem organizados para apresentação pública.</p>
+            <div class="action-row">
+              <a class="mono-action-btn" href="https://github.com/PedroWebDev-fullstack" target="_blank" rel="noopener noreferrer">Ver GitHub</a>
             </div>
-            <div class="tech-chip">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>JavaScript Moderno</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 2 e Seção 3 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 3: SOBRE -->
+      <section class="section-view" id="sobre" aria-label="Seção Sobre">
+        <div class="horizontal-track">
+          <article class="focus-item">
+            <p class="section-eyebrow">03 / Biografia</p>
+            <h2 class="section-headline">Apresentação</h2>
+            <p class="editorial-lead">Sou estudante do Ensino Médio Integrado ao Técnico em Tecnologia da Informação no Instituto Educacional Raphael di Santo. Tenho interesse em desenvolvimento web, tanto no front-end quanto no back-end, e busco oportunidades para colocar meus conhecimentos em prática.</p>
+          </article>
+
+          <article class="focus-item">
+            <p class="section-eyebrow">Filosofia de Trabalho</p>
+            <h2 class="section-headline">Clareza & Precisão</h2>
+            <p class="editorial-lead">Cursando Ensino Médio Integrado ao Técnico em Tecnologia da Informação no Instituto Educacional Raphael di Santo, com previsão de conclusão em 2027.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 3 e Seção 4 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 4: CERTIFICADOS -->
+      <section class="section-view" id="certificacoes" aria-label="Certificados">
+        <div class="horizontal-track">
+          <article class="focus-item certificate-card">
+            <img class="certificate-image" src="./img/certificado-html.jpeg" alt="Certificado de conclusão de HTML">
+            <h2 class="certificate-title">Certificado HTML - DevClub</h2>
+          </article>
+          <article class="focus-item certificate-card">
+            <img class="certificate-image" src="./img/certificado-css.jpeg" alt="Certificado de conclusão de CSS">
+            <h2 class="certificate-title">Certificado CSS - DevClub</h2>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 4 e Seção 5 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 5: HABILIDADES -->
+      <section class="section-view" id="habilidades" aria-label="Seção Habilidades">
+        <div class="horizontal-track">
+          <article class="focus-item">
+            <p class="section-eyebrow">Habilidades Comportamentais</p>
+            <h2 class="section-headline">Soft Skills</h2>
+            <p class="editorial-lead">Proatividade, atenção aos detalhes, comunicação, organização, liderança, resolução de problemas e gestão do tempo.</p>
+          </article>
+
+          <article class="focus-item skills-block">
+            <div>
+              <p class="section-eyebrow">Habilidades Técnicas</p>
+              <h2 class="section-headline">Tecnologias</h2>
             </div>
-            <div class="tech-chip">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 2 22 22 22"/></svg>
-              <span>Git & GitHub</span>
+            <div class="tech-icons-row">
+              <div class="tech-chip">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>HTML5</span>
+              </div>
+              <div class="tech-chip">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg>
+                <span>CSS3</span>
+              </div>
+              <div class="tech-chip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>JavaScript e JSX</span>
+              </div>
+              <div class="tech-chip">
+                <svg viewBox="0 0 24 24"><polygon points="12 2 2 22 22 22"/></svg>
+                <span>React e Tailwind</span>
+              </div>
+              <div class="tech-chip">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                <span>Node.js e MySQL</span>
+              </div>
             </div>
-            <div class="tech-chip">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-              <span>Design de Interface</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 5 e Seção 6 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 6: EXPERIÊNCIAS -->
+      <section class="section-view" id="experiencias" aria-label="Seção Experiências">
+        <div class="horizontal-track">
+          <article class="focus-item">
+            <p class="timeline-year">2 MESES</p>
+            <h2 class="section-headline">Auxiliar de Produção</h2>
+            <p class="section-eyebrow">Gráfica</p>
+            <p class="editorial-lead">Apoio na organização e no controle da produção, demonstrando proatividade e atenção aos detalhes em ambiente de trabalho.</p>
+          </article>
+          <article class="focus-item">
+            <p class="timeline-year">4 ANOS</p>
+            <h2 class="section-headline">Sênior</h2>
+            <p class="section-eyebrow">Grupo de Escoteiros</p>
+            <p class="editorial-lead">Liderança e coordenação de equipes em projetos, desenvolvendo comunicação, resolução de problemas e gestão do tempo.</p>
+          </article>
+          <article class="focus-item">
+            <p class="timeline-year">1,5 MÊS</p>
+            <h2 class="section-headline">Atendente e Estoquista</h2>
+            <p class="section-eyebrow">Comércio varejista</p>
+            <p class="editorial-lead">Atendimento ao cliente e gestão de estoque, aprimorando comunicação, organização e proatividade.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Linha divisória entre Seção 6 e Seção 7 -->
+      <div class="section-divider" aria-hidden="true"></div>
+
+      <!-- SEÇÃO 7: CONTATO -->
+      <section class="section-view" id="contato" aria-label="Seção Contato">
+        <div class="horizontal-track">
+          <article class="focus-item">
+            <p class="section-eyebrow">07 / Comunicação</p>
+            <h2 class="section-headline">Vamos Conversar?</h2>
+            <p class="editorial-lead">Estou disponível para novos projetos, propostas profissionais e colaborações técnicas.</p>
+            
+            <div style="margin-top: 2rem;">
+              <a href="mailto:pedrogabriel.techdev@gmail.com" class="contact-item-row">
+                <span class="contact-type">E-mail</span>
+                <span class="contact-val">pedrogabriel.techdev@gmail.com</span>
+              </a>
+              <a href="https://www.linkedin.com/in/pedrogabriel-santos" target="_blank" rel="noopener noreferrer" class="contact-item-row">
+                <span class="contact-type">LinkedIn</span>
+                <span class="contact-val">/pedrogabriel-santos</span>
+              </a>
+              <a href="https://github.com/PedroWebDev-fullstack" target="_blank" rel="noopener noreferrer" class="contact-item-row">
+                <span class="contact-type">GitHub</span>
+                <span class="contact-val">/PedroWebDev-fullstack</span>
+              </a>
+              <div class="contact-item-row">
+                <span class="contact-type">Telefone</span>
+                <span class="contact-val">+55 (19) 99192-4157</span>
+              </div>
             </div>
-          </div>
-        </article>
-      </div>
-    </section>
+          </article>
+        </div>
+      </section>
 
-    <!-- SEÇÃO 6: EXPERIÊNCIAS -->
-    <section class="section-view" id="experiencias" aria-label="Seção Experiências">
-      <div class="horizontal-track">
-        <article class="focus-item">
-          <p class="timeline-year">2024 &mdash; PRESENTE</p>
-          <h2 class="section-headline">[Empresa Atual]</h2>
-          <p class="section-eyebrow">[Desenvolvedor / Especialista Web]</p>
-          <p class="editorial-lead">Desenvolvimento de soluções web acessíveis, sistemas de microinteração fluida e manutenção da arquitetura técnica.</p>
-        </article>
+      <!-- Linha divisória entre Seção 7 e Seção 8 -->
+      <div class="section-divider" aria-hidden="true"></div>
 
-        <article class="focus-item">
-          <p class="timeline-year">2022 &mdash; 2024</p>
-          <h2 class="section-headline">[Empresa Anterior]</h2>
-          <p class="section-eyebrow">[Desenvolvedor Júnior / Designer]</p>
-          <p class="editorial-lead">Criação de páginas institucionais responsivas e implementação de layouts limpos focados em conversão e usabilidade.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- SEÇÃO 7: CONTATO -->
-    <section class="section-view" id="contato" aria-label="Seção Contato">
-      <div class="horizontal-track">
-        <article class="focus-item">
-          <p class="section-eyebrow">07 / Comunicação</p>
-          <h2 class="section-headline">Vamos Conversar?</h2>
-          <p class="editorial-lead">Estou disponível para novos projetos, propostas profissionais e colaborações técnicas.</p>
-          
-          <div style="margin-top: 2rem;">
-            <a href="mailto:[seu-email@dominio.com]" class="contact-item-row">
-              <span class="contact-type">E-mail</span>
-              <span class="contact-val">[seu-email@dominio.com]</span>
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-item-row">
-              <span class="contact-type">LinkedIn</span>
-              <span class="contact-val">/[seu-perfil]</span>
-            </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="contact-item-row">
-              <span class="contact-type">GitHub</span>
-              <span class="contact-val">/[seu-usuario]</span>
-            </a>
-            <div class="contact-item-row">
-              <span class="contact-type">Telefone</span>
-              <span class="contact-val">[opcional: (00) 00000-0000]</span>
+      <!-- SEÇÃO 8: CURRÍCULO -->
+      <section class="section-view" id="curriculo" aria-label="Seção Currículo">
+        <div class="horizontal-track">
+          <article class="focus-item" style="min-width: 65vw; max-width: 75vw;">
+            <p class="section-eyebrow">08 / Documento</p>
+            <h2 class="section-headline">Currículo Profissional</h2>
+            <div class="action-row" style="margin-top: 0.5rem;">
+              <button class="mono-action-btn" id="open-reader-btn">Visualizar no Leitor</button>
+              <a href="curriculo.pdf" download="PedroGabriel_CV.pdf" class="mono-action-btn secondary">Baixar PDF</a>
             </div>
-          </div>
-        </article>
-      </div>
-    </section>
 
-    <!-- SEÇÃO 8: CURRÍCULO (Leitor de PDF + Baixar) -->
-    <section class="section-view" id="curriculo" aria-label="Seção Currículo">
-      <div class="horizontal-track">
-        <article class="focus-item" style="min-width: 65vw; max-width: 75vw;">
-          <p class="section-eyebrow">08 / Documento</p>
-          <h2 class="section-headline">Currículo Profissional</h2>
-          <div class="action-row" style="margin-top: 0.5rem;">
-            <button class="mono-action-btn" id="open-reader-btn">Visualizar no Leitor</button>
-            <a href="curriculo.pdf" download="Curriculo_[SeuNome].pdf" class="mono-action-btn secondary">Baixar PDF</a>
-          </div>
+            <div class="pdf-reader-wrap" id="pdf-container">
+              <iframe src="curriculo.pdf#toolbar=0" style="width:100%; height:100%; border:none;" title="Leitor de Currículo">
+                <p style="padding: 1rem; color: var(--fg-muted);">Seu navegador não suporta visualização direta. Utilize o botão Baixar PDF.</p>
+              </iframe>
+            </div>
+          </article>
+        </div>
+      </section>
 
-          <div class="pdf-reader-wrap" id="pdf-container">
-            <!-- Visualizador simulado / iframe seguro para PDF -->
-            <iframe src="curriculo.pdf#toolbar=0" style="width:100%; height:100%; border:none;" title="Leitor de Currículo">
-              <p style="padding: 1rem; color: var(--fg-muted);">Seu navegador não suporta visualização direta. Utilize o botão Baixar PDF.</p>
-            </iframe>
-          </div>
-        </article>
-      </div>
-    </section>
-
-      </main>
-    </div>
+    </main>
   </div>
 
-  <!-- Indicador de Rolagem Vertical (Apenas uma bolinha branca indicando) -->
+  <!-- Indicador de Rolagem Vertical -->
   <div class="vertical-scroll-indicator" id="vertical-scroll-indicator" aria-label="Indicador de rolagem">
     <div class="indicator-rail"></div>
     <div class="indicator-dot" id="indicator-dot"></div>
@@ -1164,12 +1298,12 @@
        Lógica JavaScript Pura (Rolagem Vertical -> Horizontal & Controles)
        ------------------------------------------------------------- */
 
-    // 1. Splash Screen Logo Reveal (referência 2 - Máx 2.5s)
+    // 1. Splash Screen Logo Reveal
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('intro-splash');
       setTimeout(() => {
         if (splash) splash.classList.add('fade-out');
-      }, 1800);
+      }, 2800);
 
       initHorizontalScrollSystem();
       initWheelNavigation();
@@ -1178,12 +1312,11 @@
       initKeyboardAndTouch();
       initScrollIndicator();
 
-      // Calibra métricas de rolagem
       updateScrollMetrics();
       setTimeout(updateScrollMetrics, 300);
     });
 
-    // 2. Alternância e Persistência do Tema Claro / Escuro
+    // 2. Alternância e Persistência do Tema
     function initThemePersistence() {
       const toggleBtn = document.getElementById('theme-toggle');
       const root = document.documentElement;
@@ -1210,7 +1343,7 @@
       }
     }
 
-    // 3. Menu em Roda Orbital (Distribuição circular e rotação dinâmica)
+    // 3. Menu em Roda Orbital
     const wheelSections = ['projetos', 'experiencias', 'sobre', 'inicio', 'habilidades', 'contato', 'certificacoes', 'curriculo'];
     let activeSectionId = 'inicio';
 
@@ -1282,7 +1415,7 @@
       });
     }
 
-    // 4. Sistema de Rolagem: O Scroll Vertical movimenta o mundo Horizontalmente
+    // 4. Sistema de Rolagem
     function initHorizontalScrollSystem() {
       window.addEventListener('scroll', handleScroll, { passive: true });
       window.addEventListener('resize', updateScrollMetrics, { passive: true });
@@ -1323,14 +1456,12 @@
 
       world.style.transform = `translate3d(-${currentX}px, 0, 0)`;
 
-      // Atualiza a posição da bolinha branca no indicador vertical
       if (indicator && dot) {
         const railHeight = indicator.clientHeight - 8;
         const dotY = progress * railHeight;
         dot.style.transform = `translateY(${dotY}px)`;
       }
 
-      // Detecção precisa da seção ativa
       const allSections = document.querySelectorAll('.section-view');
       const focalPoint = window.innerWidth > 900 ? window.innerWidth * 0.35 : window.innerWidth * 0.5;
       let closestSectionId = activeSectionId;
@@ -1379,7 +1510,7 @@
       if (drawer) drawer.classList.remove('is-active');
     }
 
-    // 5. Indicador de Rolagem Vertical (Bolinha branca interativa)
+    // 5. Indicador de Rolagem Vertical
     function initScrollIndicator() {
       const indicator = document.getElementById('vertical-scroll-indicator');
       if (!indicator) return;
@@ -1427,7 +1558,7 @@
       });
     }
 
-    // 6. Controles Auxiliares: Teclado, Toque e Setas
+    // 6. Controles Auxiliares
     function initKeyboardAndTouch() {
       const prevBtn = document.getElementById('arrow-prev');
       const nextBtn = document.getElementById('arrow-next');
@@ -1446,7 +1577,6 @@
         });
       }
 
-      // Navegação por teclado global
       window.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -1457,7 +1587,6 @@
         }
       });
 
-      // Suporte a gestos touch (swipe horizontal também movimenta verticalmente)
       let touchStartX = 0;
       let touchStartY = 0;
       window.addEventListener('touchstart', (e) => {
@@ -1475,7 +1604,6 @@
         }
       }, { passive: true });
 
-      // Menu Hambúrguer Móvel
       const menuBtn = document.getElementById('menu-toggle-btn');
       const drawer = document.getElementById('mobile-drawer');
 
@@ -1496,7 +1624,7 @@
       }
     }
 
-    // 7. Filtro de Projetos (Sem reload) e Modal
+    // 7. Filtro de Projetos e Modal
     function initProjectFilterAndModal() {
       const filterBtns = document.querySelectorAll('.filter-btn');
       const projectItems = document.querySelectorAll('.project-entry');
@@ -1516,12 +1644,10 @@
             }
           });
 
-          // Recalcula métricas da página
           setTimeout(updateScrollMetrics, 40);
         });
       });
 
-      // Modal de detalhes do projeto
       const modal = document.getElementById('project-modal');
       const closeBtn = document.getElementById('modal-close-btn');
 
@@ -1543,7 +1669,6 @@
         });
       }
 
-      // Botão do Currículo para focar o leitor
       const readerBtn = document.getElementById('open-reader-btn');
       if (readerBtn) {
         readerBtn.addEventListener('click', () => {
